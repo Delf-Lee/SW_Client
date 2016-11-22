@@ -7,7 +7,7 @@ import java.awt.Image;
 public class GameScreen extends Canvas {
 	// 실제 게임의 메인 제어를 행하는 클래스
 	// 가급적 화면 출력에서는 게임에서 공통으로 쓰이는 변수값의 변경 등을 행하지 않는 것이 좋다.
-	ShootingFrame main;
+	MainFrame main;
 
 	int cnt, gamecnt;
 
@@ -42,7 +42,7 @@ public class GameScreen extends Canvas {
 
 	boolean boss = false;// 보스관련 추가
 
-	GameScreen(ShootingFrame main) {
+	GameScreen(MainFrame main) {
 		this.main = main;
 		font = new Font("Default", Font.PLAIN, 9);
 	}
@@ -144,15 +144,15 @@ public class GameScreen extends Canvas {
 
 	public void drawPlayer1() {
 		int px, py;
-		px = main.px1 / 100;
-		py = main.py1 / 100;
+		px = main.x[G.P1] / 100;
+		py = main.y[G.P1] / 100;
 		switch (main.mymode) {
-		case ShootingFrame.UNBEATABLE:// 무적
-		case ShootingFrame.APPEARANCE:// 무적이면서 등장
+		case MainFrame.UNBEATABLE:// 무적
+		case MainFrame.APPEARANCE:// 무적이면서 등장
 			if (main.cnt % 20 < 10)
 				drawImageAnc(chr[2 + (main.cnt / 5) % 2], px, py, 4);
 			break;
-		case ShootingFrame.ONPLAY:// 온플레이
+		case MainFrame.ONPLAY:// 온플레이
 			if (main.pImg == 6)
 				drawImageAnc(chr[main.pImg + (main.cnt / 3) % 2], px, py, 4);
 			else if (main.pImg != 8)
@@ -160,7 +160,7 @@ public class GameScreen extends Canvas {
 			else if (main.pImg == 8)
 				drawImageAnc(chr[main.pImg], px, py, 4);
 			break;
-		case ShootingFrame.DAMAGE:// 데미지
+		case MainFrame.DAMAGE:// 데미지
 			if (main.cnt % 6 < 3)
 				drawImageAnc(chr[8], px, py, 4);
 			break;
@@ -173,15 +173,15 @@ public class GameScreen extends Canvas {
 
 	public void drawPlayer2() {
 		int px, py;
-		px = main.px2 / 100;
-		py = main.py2 / 100;
+		px = main.x[G.P2] / 100;
+		py = main.y[G.P2] / 100;
 		switch (main.mymode) {
-		case ShootingFrame.UNBEATABLE:// 무적
-		case ShootingFrame.APPEARANCE:// 무적이면서 등장
+		case MainFrame.UNBEATABLE:// 무적
+		case MainFrame.APPEARANCE:// 무적이면서 등장
 			if (main.cnt % 20 < 10)
 				drawImageAnc(chr[2 + (main.cnt / 5) % 2], px, py, 4);
 			break;
-		case ShootingFrame.ONPLAY:// 온플레이
+		case MainFrame.ONPLAY:// 온플레이
 			if (main.pImg == 6)
 				drawImageAnc(chr[main.pImg + (main.cnt / 3) % 2], px, py, 4);
 			else if (main.pImg != 8)
@@ -189,7 +189,7 @@ public class GameScreen extends Canvas {
 			else if (main.pImg == 8)
 				drawImageAnc(chr[main.pImg], px, py, 4);
 			break;
-		case ShootingFrame.DAMAGE:// 데미지
+		case MainFrame.DAMAGE:// 데미지
 			if (main.cnt % 6 < 3)
 				drawImageAnc(chr[8], px, py, 4);
 			break;
@@ -289,8 +289,8 @@ public class GameScreen extends Canvas {
 		// 그래피컬 UI를 위한 추가 코드
 		gc.drawImage(uiUp, 16, 25, this);// 2013-10
 
-		drawImageNum(num, 320, 40, main.score, 8);// 2013-10
-		drawImageNum(num, 52, 40, main.playerLife, 2);// 2013-10
+		drawImageNum(num, 320, 40, main.score[G.P1], 8);// 2013-10
+		drawImageNum(num, 52, 40, main.playerLife[G.P1], 2);// 2013-10
 		drawImageNum(num, 576, 40, main.level, 2);// 2013-10
 
 	}

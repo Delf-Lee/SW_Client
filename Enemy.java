@@ -2,7 +2,7 @@ import java.awt.Point;
 
 public class Enemy {
 	// 게임에 등장하는 적 캐릭터 관리 클래스
-	ShootingFrame main;
+	MainFrame main;
 	Point pos;
 	Point _pos;
 	Point dis;
@@ -15,7 +15,7 @@ public class Enemy {
 	int hitrange;// 다양한 크기의 적 캐릭터 수용을 위해 명중 판정 범위를 추가한다.
 	Bullet bul;
 
-	Enemy(ShootingFrame main, int img, int x, int y, int kind, int mode) {
+	Enemy(MainFrame main, int img, int x, int y, int kind, int mode) {
 		this.main = main;
 		pos = new Point(x, y);
 		_pos = new Point(x, y);
@@ -77,7 +77,7 @@ public class Enemy {
 			switch (shoottype) {// 공격 형태에 따라 각기 다른 공격을 한다.
 			case 0:// 플레이어를 향해 3발을 점사한다
 				if (cnt % 100 == 0 || cnt % 103 == 0 || cnt % 106 == 0) {// cnt로 공격 간격을 체크한다
-					bul = new Bullet(pos.x, pos.y, 2, 1, main.getAngle(pos.x, pos.y, main.px1, main.py1), 3);
+					bul = new Bullet(pos.x, pos.y, 2, 1, main.getAngle(pos.x, pos.y, main.x[G.P1], main.y[G.P1]), 3);
 					main.bullets.add(bul);
 				}
 				break;
@@ -95,17 +95,17 @@ public class Enemy {
 				break;
 			case 2:// 짧은 간격으로 플레이어 근처를 향해 한 발씩 발사한다
 				if (cnt % 30 == 0 || cnt % 60 == 0 || cnt % 90 == 0 || cnt % 120 == 0 || cnt % 150 == 0 || cnt % 180 == 0) {
-					bul = new Bullet(pos.x, pos.y, 2, 1, (main.getAngle(pos.x, pos.y, main.px1, main.py1) + main.RAND(-20, 20)) % 360, 2);
+					bul = new Bullet(pos.x, pos.y, 2, 1, (main.getAngle(pos.x, pos.y, main.x[G.P1], main.y[G.P1]) + main.RAND(-20, 20)) % 360, 2);
 					main.bullets.add(bul);
 				}
 				break;
 			case 3:// 플레이어를 향해 3갈래탄을 발사한다
 				if (cnt % 90 == 0 || cnt % 110 == 0 || cnt % 130 == 0) {
-					bul = new Bullet(pos.x, pos.y, 2, 1, main.getAngle(pos.x, pos.y, main.px1, main.py1), 2);
+					bul = new Bullet(pos.x, pos.y, 2, 1, main.getAngle(pos.x, pos.y, main.x[G.P1], main.y[G.P1]), 2);
 					main.bullets.add(bul);
-					bul = new Bullet(pos.x, pos.y, 2, 1, (main.getAngle(pos.x, pos.y, main.px1, main.py1) - 20) % 360, 2);
+					bul = new Bullet(pos.x, pos.y, 2, 1, (main.getAngle(pos.x, pos.y, main.x[G.P1], main.y[G.P1]) - 20) % 360, 2);
 					main.bullets.add(bul);
-					bul = new Bullet(pos.x, pos.y, 2, 1, (main.getAngle(pos.x, pos.y, main.px1, main.py1) + 20) % 360, 2);
+					bul = new Bullet(pos.x, pos.y, 2, 1, (main.getAngle(pos.x, pos.y, main.x[G.P1], main.y[G.P1]) + 20) % 360, 2);
 					main.bullets.add(bul);
 				}
 				break;
@@ -174,7 +174,7 @@ public class Enemy {
 					break;
 				}
 				if (cnt >= 30) {
-					if (pos.y > main.py1)
+					if (pos.y > main.y[G.P1])
 						mode = 3;
 					else
 						mode = 2;
@@ -209,13 +209,13 @@ public class Enemy {
 			case 0:
 				pos.x -= 500;
 				pos.y += 80;
-				if (pos.x < main.px1)
+				if (pos.x < main.x[G.P1])
 					mode = 2;
 				break;
 			case 1:
 				pos.x -= 500;
 				pos.y -= 80;
-				if (pos.x < main.px1)
+				if (pos.x < main.x[G.P1])
 					mode = 3;
 				break;
 			case 2:
@@ -251,9 +251,9 @@ public class Enemy {
 				break;
 			case 1:
 				if (cnt % 30 == 0) {
-					if (pos.y > main.py1)
+					if (pos.y > main.y[G.P1])
 						mode = 3;
-					else if (pos.y < main.py1)
+					else if (pos.y < main.y[G.P1])
 						mode = 2;
 					_pos.x = pos.x;
 					_pos.y = pos.y;// 이동 거리를 체크하기 위해 이동이 시작되는 위치를 지정

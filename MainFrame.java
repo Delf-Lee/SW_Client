@@ -1,23 +1,17 @@
-import java.awt.Canvas;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Frame;
-import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.MediaTracker;
-import java.awt.Point;
 import java.awt.Toolkit;
-import java.awt.Window;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.Random;
 import java.util.Vector;
 
-public class ShootingFrame extends Frame implements KeyListener, Runnable {
+// delf: 이름을 GameFrame으로 변경
+public class MainFrame extends Frame implements KeyListener, Runnable {
 	// 기본 윈도우를 형성하는 프레임을 만든다
 	// KeyListener : 키보드 입력 이벤트를 받는다
 	// Runnable : 스레드를 가능하게 한다
@@ -34,27 +28,32 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 	Random rnd = new Random(); // 랜덤 선언
 
 	private Client client;
-
+	private String id;
 	// 게임 제어를 위한 변수
 	int status;// 게임의 상태
 	int cnt;// 루프 제어용 컨트롤 변수
 	int delay;// 루프 딜레이. 1/1000초 단위.
 	long pretime;// 루프 간격을 조절하기 위한 시간 체크값
 	int keybuff;// 키 버퍼값
+	// int controlP2;
 
 	// AudioClip[] aclip=new AudioClip[3];
 
 	// 게임용 변수
-	int score;// 점수
-	int playerLife;// 남은 목숨
+	// delf: 게임용 변수 중 2개가 필요한 것을 배열화, 및 다른 클래스 내의 변수도 변경
+	int[] score = new int[2];// 점수
+	int[] playerLife = new int[2];// 남은 목숨
+	int[] direction = new int[2];// 플레이어 이동 방향
+	int[] x = new int[2];
+	int[] y = new int[2];
+	int[] control = new int[2]; // delf: keybuff를 두 개로 나눈 것
+
+	// TODO: 이것도 두개로 만들어야 할거같다.
 	int gameCnt;// 게임 흐름 컨트롤
 	int scrSpeed = 16;// 스크롤 속도
 	int level;// 게임 레벨
 
-	int px1, py1;// 플레이어 위치. 화면 좌표계에 *100 된 상태.
-	int px2, py2;// 플레이어 위치. 화면 좌표계에 *100 된 상태.
 	int playerSpeed;// 플레이어 이동 속도
-	int direction;// 플레이어 이동 방향
 	// 보통 4방향키-8방향 조작계에서는 이동 방향을 각도로 관리하지 않지만 여기서는 장래 터치스크린 인터페이스로
 	// 이식될 것을 고려해 4방향키 조작계를 0, 45, 90, 135, 180, 225, 270, 315도 방향으로 조작하는 것으로 한다.
 	int pWidth, pHeight;// 플레이어 캐릭터의 너비 높이
@@ -84,8 +83,9 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 	// 속도를 위해서는 크기를 넉넉하게 잡은 테이블을 사용하는데, 소스가 지저분해지고, 불필요한 메모리를 낭비하게 되므로 적절한 것을 선택한다.
 	// 또, C 베이스 플랫폼으로 이식할 경우를 고려야 한다면 class나 Vector, Hashtable 같은 것은 이식하기 어려워지므로 가급적 피한다.
 
-	public ShootingFrame(Client client) {
+	public MainFrame(Client client) {
 		this.client = client;
+		id = "" + client.getPlayerId();
 
 		// 기본적인 윈도우 정보 세팅. 게임과 직접적인 상관은 없이 게임 실행을 위한 창을 준비하는 과정.
 		setIconImage(makeImage("./rsc/icon.png"));
@@ -95,9 +95,20 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 		setBounds(100, 100, 640, 480);// 윈도우의 시작 위치와 너비 높이 지정
 		setResizable(false);// 윈도우의 크기를 변경할 수 없음
 		setVisible(true);// 윈도우 표시
-
+		if (getKeyListeners() == null) {
+			System.out.println("리스너 없어짐");
+		}
+		else {
+			System.out.println(getKeyListeners());
+		}
 		addKeyListener(this);// 키 입력 이벤트 리스너 활성화
 		addWindowListener(new MyWindowAdapter());// 윈도우의 닫기 버튼 활성화
+		if (getKeyListeners() == null) {
+			System.out.println("리스너 없어짐");
+		}
+		else {
+			System.out.println(getKeyListeners());
+		}
 
 		gamescreen = new GameScreen(this);// 화면 묘화를 위한 캔버스 객체
 		gamescreen.setBounds(0, 0, screenWidth, screenHeight);
@@ -127,7 +138,6 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 		try {
 			while (loop) {
 				pretime = System.currentTimeMillis();
-
 				gamescreen.repaint();// 화면 리페인트
 				keyprocess();// 키 처리
 				/* 키를 서버 보내는 작업 */
@@ -148,6 +158,7 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 
 	// 키 이벤트 리스너 처리
 	public void keyPressed(KeyEvent e) {
+		System.out.println("키 눌림");
 		// if(status==2&&(mymode==2||mymode==0)){
 		if (status == INGAME) {
 			switch (e.getKeyCode()) {
@@ -186,12 +197,30 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 			default:
 				break;
 			}
-			client.sendMsg(Integer.toString(keybuff));
 		}
 		else if (status != INGAME) {
+			System.out.println("게임중 아닌상태에서 무언가 눌림");
 			keybuff = e.getKeyCode();
+			System.out.println("눌린 키는 " + keybuff);
 		}
+		sendKey(keybuff); // delf: 눌린 키를 서버에 전송한다.
 
+	}
+
+	/** keybuf에 저장 된 키 값을 서버에 전송. "command id key"의 형식으로 전송된다.
+	 * @param key 현재 눌려져있는 키 값에 해당하는 정수. 현재 keybuff에 저장되어 있는 정수. */
+	public void sendKey(int key) {
+		String msg = createMsg(G.KEY, id, key + "");
+		client.sendMsg(msg);
+	}
+
+	public String createMsg(String... par) {
+		String msg = "";
+		for (int i = 0; i < par.length - 1; i++) {
+			msg += par[i] + G.BLANK;
+		}
+		msg += par[par.length - 1];
+		return msg;
 	}
 
 	public void keyReleased(KeyEvent e) {
@@ -215,6 +244,7 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 			keybuff &= ~DOWN_PRESSED;
 			break;
 		}
+		sendKey(keybuff); // delf: 떼진 키를 서버에 전송한다.
 		// }
 		// PC 환경에서는 기본적으로 키보드의 반복입력을 지원하지만,
 		// 그렇지 않은 플랫폼에서는 키 버퍼값에 떼고 눌렀을 때마다 값을 변경해 리피트 여부를 제어한다.
@@ -263,12 +293,17 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 			gameCnt++;
 	}
 
+	public void setKeybuff() {
+
+	}
+
 	// 키 입력 처리
 	// 키 이벤트에서 입력 처리를 할 경우, 이벤트 병목현상이 발생할 수 있으므로 이벤트에서는 키 버퍼만을 변경하고, 루프 내에서 버퍼값에 따른 처리를 한다.
 	private void keyprocess() {
 		switch (status) {
 		case TITLE:// 타이틀화면
-			if (keybuff == KeyEvent.VK_SPACE) {
+			if (keybuff == KeyEvent.VK_SPACE) { // delf: 임시로 keybuff로 변경
+				System.out.println("스페이스");
 				initGame();
 				initPlayer();
 				status = START;
@@ -276,97 +311,185 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 			break;
 		case INGAME:// 게임화면
 			if (mymode == ONPLAY || mymode == UNBEATABLE) {
-				switch (keybuff) {
+				switch (control[G.P1]) {
 				case 0:
-					direction = -1;
+					direction[G.P1] = -1;
 					pImg = 0;
 					break;
 				case FIRE_PRESSED:
-					direction = -1;
+					direction[G.P1] = -1;
 					pImg = 6;
 					break;
 				case UP_PRESSED:
-					direction = 0;
+					direction[G.P1] = 0;
 					pImg = 2;
 					break;
 				case UP_PRESSED | FIRE_PRESSED:
-					direction = 0;
+					direction[G.P1] = 0;
 					pImg = 6;
 					break;
 				case LEFT_PRESSED:
-					direction = 90;
+					direction[G.P1] = 90;
 					pImg = 4;
 					break;
 				case LEFT_PRESSED | FIRE_PRESSED:
-					direction = 90;
+					direction[G.P1] = 90;
 					pImg = 6;
 					break;
 				case RIGHT_PRESSED:
-					direction = 270;
+					direction[G.P1] = 270;
 					pImg = 2;
 					break;
 				case RIGHT_PRESSED | FIRE_PRESSED:
-					direction = 270;
+					direction[G.P1] = 270;
 					pImg = 6;
 					break;
 				case UP_PRESSED | LEFT_PRESSED:
-					direction = 45;
+					direction[G.P1] = 45;
 					pImg = 4;
 					break;
 				case UP_PRESSED | LEFT_PRESSED | FIRE_PRESSED:
-					direction = 45;
+					direction[G.P1] = 45;
 					pImg = 6;
 					break;
 				case UP_PRESSED | RIGHT_PRESSED:
-					direction = 315;
+					direction[G.P1] = 315;
 					pImg = 2;
 					break;
 				case UP_PRESSED | RIGHT_PRESSED | FIRE_PRESSED:
-					direction = 315;
+					direction[G.P1] = 315;
 					pImg = 6;
 					break;
 				case DOWN_PRESSED:
-					direction = 180;
+					direction[G.P1] = 180;
 					pImg = 2;
 					break;
 				case DOWN_PRESSED | FIRE_PRESSED:
-					direction = 180;
+					direction[G.P1] = 180;
 					pImg = 6;
 					break;
 				case DOWN_PRESSED | LEFT_PRESSED:
-					direction = 135;
+					direction[G.P1] = 135;
 					pImg = 4;
 					break;
 				case DOWN_PRESSED | LEFT_PRESSED | FIRE_PRESSED:
-					direction = 135;
+					direction[G.P1] = 135;
 					pImg = 6;
 					break;
 				case DOWN_PRESSED | RIGHT_PRESSED:
-					direction = 225;
+					direction[G.P1] = 225;
 					pImg = 2;
 					break;
 				case DOWN_PRESSED | RIGHT_PRESSED | FIRE_PRESSED:
-					direction = 225;
+					direction[G.P1] = 225;
 					pImg = 6;
 					break;
 				default:
-					// System.out.println(""+keybuff);
-					keybuff = 0;
-					direction = -1;
+					// System.out.println(""+control[G.P1]);
+					control[G.P1] = 0;
+					direction[G.P1] = -1;
+					pImg = 0;
+					break;
+				}
+
+				switch (control[G.P2]) {
+				case 0:
+					direction[G.P2] = -1;
+					pImg = 0;
+					break;
+				case FIRE_PRESSED:
+					direction[G.P2] = -1;
+					pImg = 6;
+					break;
+				case UP_PRESSED:
+					direction[G.P2] = 0;
+					pImg = 2;
+					break;
+				case UP_PRESSED | FIRE_PRESSED:
+					direction[G.P2] = 0;
+					pImg = 6;
+					break;
+				case LEFT_PRESSED:
+					direction[G.P2] = 90;
+					pImg = 4;
+					break;
+				case LEFT_PRESSED | FIRE_PRESSED:
+					direction[G.P2] = 90;
+					pImg = 6;
+					break;
+				case RIGHT_PRESSED:
+					direction[G.P2] = 270;
+					pImg = 2;
+					break;
+				case RIGHT_PRESSED | FIRE_PRESSED:
+					direction[G.P2] = 270;
+					pImg = 6;
+					break;
+				case UP_PRESSED | LEFT_PRESSED:
+					direction[G.P2] = 45;
+					pImg = 4;
+					break;
+				case UP_PRESSED | LEFT_PRESSED | FIRE_PRESSED:
+					direction[G.P2] = 45;
+					pImg = 6;
+					break;
+				case UP_PRESSED | RIGHT_PRESSED:
+					direction[G.P2] = 315;
+					pImg = 2;
+					break;
+				case UP_PRESSED | RIGHT_PRESSED | FIRE_PRESSED:
+					direction[G.P2] = 315;
+					pImg = 6;
+					break;
+				case DOWN_PRESSED:
+					direction[G.P2] = 180;
+					pImg = 2;
+					break;
+				case DOWN_PRESSED | FIRE_PRESSED:
+					direction[G.P2] = 180;
+					pImg = 6;
+					break;
+				case DOWN_PRESSED | LEFT_PRESSED:
+					direction[G.P2] = 135;
+					pImg = 4;
+					break;
+				case DOWN_PRESSED | LEFT_PRESSED | FIRE_PRESSED:
+					direction[G.P2] = 135;
+					pImg = 6;
+					break;
+				case DOWN_PRESSED | RIGHT_PRESSED:
+					direction[G.P2] = 225;
+					pImg = 2;
+					break;
+				case DOWN_PRESSED | RIGHT_PRESSED | FIRE_PRESSED:
+					direction[G.P2] = 225;
+					pImg = 6;
+					break;
+				default:
+					// System.out.println(""+control[G.P2]);
+					control[G.P2] = 0;
+					direction[G.P2] = -1;
 					pImg = 0;
 					break;
 				}
 			}
 			break;
-		case 3:
-			if (gameCnt++ >= 200 && keybuff == KeyEvent.VK_SPACE) {
+		case GAMEOVER:
+			if (gameCnt++ >= 200 && control[G.P1] == KeyEvent.VK_SPACE) {
 				initTitle();
 				status = 0;
-				keybuff = 0;
+				control[G.P1] = 0;
+			}
+
+			if (gameCnt++ >= 200 && control[G.P2] == KeyEvent.VK_SPACE) {
+				initTitle();
+				status = 0;
+				control[G.P2] = 0;
 			}
 			break;
-		case 4:
-			if (gameCnt++ >= 200 && keybuff == KeyEvent.VK_3)
+		case PAUSE:
+			// TODO: 로직 수정 필요
+			if (gameCnt++ >= 200 && control[G.P1] == KeyEvent.VK_3)
 				status = 2;
 			break;
 		default:
@@ -441,52 +564,55 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 	}
 
 	public void initPlayerData() {
-		score = 0;
-		px1 = 0;
-		py1 = 17000;
+		score[G.P1] = 0;
+		x[G.P1] = 0;
+		y[G.P1] = 17000;
 		playerSpeed = 4;
-		direction = -1;
+		direction[G.P1] = -1;
 		// mywidth, myheight;//플레이어 캐릭터의 너비 높이
 		mymode = 1;
 		pImg = 2;
 		mycnt = 0;
-		playerLife = 3;
+		playerLife[G.P1] = 10000000;
 		keybuff = 0;
-		
+
 		// delf: 임시코드
-		px2 = 0;
-		py2 = 30000;
+		x[G.P2] = 0;
+		y[G.P2] = 30000;
+		direction[G.P2] = -1;
+		playerLife[G.P1] = 10000000;
 	}
 
-	public void processPlayer1() {
+	/** 플레이어에 대한 처리를 한다. 각 상황에 따라 어떻게 행동 해야할지 처리함 */
+	public void processPlayer1() { // delf: 메소드 이름 변경함
 		Bullet shoot;
 		switch (mymode) {
-		case APPEARANCE: // 등장 시,
-			px1 += 200; // 일정 위치까지 앞으로 이동
-			if (px1 > 20000)
-				mymode = ONPLAY; // 도착하면 게임 시작
-			break;
-		case UNBEATABLE:
-			if (mycnt-- == 0) {
+		case APPEARANCE: // delf: 등장 시,
+			x[G.P1] += 200; // delf: 일정 위치까지 앞으로 이동
+			if (x[G.P1] > 20000)
 				mymode = ONPLAY;
+			break;
+		case UNBEATABLE: // delf: 무적
+			if (mycnt-- == 0) { // delf: 일정 시간 지나면
+				mymode = ONPLAY; // delf: 게임 재개
 				pImg = 0;
 			}
 		case ONPLAY:
-			if (direction != -1 && keyReverse)
-				direction = (direction + 180) % 360;
-			if (direction > -1) {
-				px1 -= (playerSpeed * Math.sin(Math.toRadians(direction)) * 100);
-				py1 -= (playerSpeed * Math.cos(Math.toRadians(direction)) * 100);
+			if (direction[G.P1] != -1 && keyReverse)
+				direction[G.P1] = (direction[G.P1] + 180) % 360;
+			if (direction[G.P1] > -1) {
+				x[G.P1] -= (playerSpeed * Math.sin(Math.toRadians(direction[G.P1])) * 100);
+				y[G.P1] -= (playerSpeed * Math.cos(Math.toRadians(direction[G.P1])) * 100);
 			}
 			if (pImg == 6) {
-				px1 -= 20;
+				x[G.P1] -= 20;
 				if (cnt % 4 == 0 || isShotKeyPressed) {
 					isShotKeyPressed = false;
-					shoot = new Bullet(px1 + 2500, py1 + 1500, 0, 0, RAND(245, 265), 8);
+					shoot = new Bullet(x[G.P1] + 2500, y[G.P1] + 1500, 0, 0, RAND(245, 265), 8);
 					bullets.add(shoot);
-					shoot = new Bullet(px1 + 2500, py1 + 1500, 0, 0, RAND(268, 272), 9);
+					shoot = new Bullet(x[G.P1] + 2500, y[G.P1] + 1500, 0, 0, RAND(268, 272), 9);
 					bullets.add(shoot);
-					shoot = new Bullet(px1 + 2500, py1 + 1500, 0, 0, RAND(275, 295), 8);
+					shoot = new Bullet(x[G.P1] + 2500, y[G.P1] + 1500, 0, 0, RAND(275, 295), 8);
 					bullets.add(shoot);
 				}
 				// 8myy+=70;
@@ -500,23 +626,22 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 			}
 			break;
 		}
-		if (px1 < 2000)
-			px1 = 2000;
-		if (px1 > 62000)
-			px1 = 62000;
-		if (py1 < 3000)
-			py1 = 3000;
-		if (py1 > 45000)
-			py1 = 45000;
+		if (x[G.P1] < 2000)
+			x[G.P1] = 2000;
+		if (x[G.P1] > 62000)
+			x[G.P1] = 62000;
+		if (y[G.P1] < 3000)
+			y[G.P1] = 3000;
+		if (y[G.P1] > 45000)
+			y[G.P1] = 45000;
 	}
-	
+
 	public void processPlayer2() {
 		Bullet shoot;
 		switch (mymode) {
 		case APPEARANCE: // 등장 시,
-			px2 += 200; // 일정 위치까지 앞으로 이동
-			System.out.println(px2);
-			if (px2 > 20000)
+			x[G.P2] += 200; // 일정 위치까지 앞으로 이동
+			if (x[G.P2] > 20000)
 				mymode = ONPLAY; // 도착하면 게임 시작
 			break;
 		case UNBEATABLE:
@@ -525,21 +650,21 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 				pImg = 0;
 			}
 		case ONPLAY:
-			if (direction != -1 && keyReverse)
-				direction = (direction + 180) % 360;
-			if (direction > -1) {
-				px2 -= (playerSpeed * Math.sin(Math.toRadians(direction)) * 100);
-				py2 -= (playerSpeed * Math.cos(Math.toRadians(direction)) * 100);
+			if (direction[G.P2] != -1 && keyReverse)
+				direction[G.P2] = (direction[G.P2] + 180) % 360;
+			if (direction[G.P2] > -1) {
+				x[G.P2] -= (playerSpeed * Math.sin(Math.toRadians(direction[G.P2])) * 100);
+				y[G.P2] -= (playerSpeed * Math.cos(Math.toRadians(direction[G.P2])) * 100);
 			}
 			if (pImg == 6) {
-				px2 -= 20;
+				x[G.P2] -= 20;
 				if (cnt % 4 == 0 || isShotKeyPressed) {
 					isShotKeyPressed = false;
-					shoot = new Bullet(px2 + 2500, py2 + 1500, 0, 0, RAND(245, 265), 8);
+					shoot = new Bullet(x[G.P2] + 2500, y[G.P2] + 1500, 0, 0, RAND(245, 265), 8);
 					bullets.add(shoot);
-					shoot = new Bullet(px2 + 2500, py2 + 1500, 0, 0, RAND(268, 272), 9);
+					shoot = new Bullet(x[G.P2] + 2500, y[G.P2] + 1500, 0, 0, RAND(268, 272), 9);
 					bullets.add(shoot);
-					shoot = new Bullet(px2 + 2500, py2 + 1500, 0, 0, RAND(275, 295), 8);
+					shoot = new Bullet(x[G.P2] + 2500, y[G.P2] + 1500, 0, 0, RAND(275, 295), 8);
 					bullets.add(shoot);
 				}
 				// 8myy+=70;
@@ -553,14 +678,14 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 			}
 			break;
 		}
-		if (px2 < 2000)
-			px2 = 2000;
-		if (px2 > 62000)
-			px2 = 62000;
-		if (py2 < 3000)
-			py2 = 3000;
-		if (py2 > 45000)
-			py2 = 45000;
+		if (x[G.P2] < 2000)
+			x[G.P2] = 2000;
+		if (x[G.P2] > 62000)
+			x[G.P2] = 62000;
+		if (y[G.P2] < 3000)
+			y[G.P2] = 3000;
+		if (y[G.P2] > 45000)
+			y[G.P2] = 45000;
 	}
 
 	public void processEnemy() {
@@ -613,7 +738,7 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 						// expl=new Effect(0, ebuff.pos.x, buff.pos.y, 0);
 						effect = new Effect(0, bullet.pos.x, bullet.pos.y, 0);
 						effects.add(effect);
-						score++;// 점수 추가
+						score[G.P1]++;// 점수 추가
 						bullets.remove(i);// 총알 소거
 						break;// 총알이 소거되었으므로 루프 아웃
 					}
@@ -622,15 +747,15 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 			else { // 적이 쏜 총알이 플레이어에게 명중 판정
 				if (mymode != ONPLAY)
 					continue;
-				dist = getDistance(px1 / 100, py1 / 100, bullet.dis.x, bullet.dis.y);
+				dist = getDistance(x[G.P1] / 100, y[G.P1] / 100, bullet.dis.x, bullet.dis.y);
 				if (dist < 500) {
 					if (myshield == 0) {
 						mymode = 3;
 						mycnt = 30;
 						bullets.remove(i);
-						effect = new Effect(0, px1 - 2000, py1, 0);
+						effect = new Effect(0, x[G.P1] - 2000, y[G.P1], 0);
 						effects.add(effect);
-						if (--playerLife <= 0) {
+						if (--playerLife[G.P1] <= 0) {
 							status = 3;
 							gameCnt = 0;
 						}
@@ -771,11 +896,11 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 		Item buff;
 		for (i = 0; i < items.size(); i++) {
 			buff = (Item) (items.elementAt(i));
-			dist = getDistance(px1 / 100, py1 / 100, buff.dis.x, buff.dis.y);
+			dist = getDistance(x[G.P1] / 100, y[G.P1] / 100, buff.dis.x, buff.dis.y);
 			if (dist < 1000) {// 아이템 획득
 				switch (buff.kind) {
 				case SCORE:// 일반 득점
-					score += 100;
+					score[G.P1] += 100;
 					break;
 				case SHIELD:// 실드
 					myshield = 5;
@@ -791,7 +916,7 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 						if (ebuff == null)
 							continue;// 만일 해당 인덱스에 적 캐릭터가 생성되어있지 않을 경우를 대비
 						if (ebuff.kind == 1) {// 해당 인덱스에 할당된 적 캐릭터가 보스 캐릭터일 경우는 전멸에 해당하지 않고 HP만 반으로 줄인다. 1 이하라면 1.
-							score += 300;
+							score[G.P1] += 300;
 							ebuff.life = ebuff.life / 2;
 							if (ebuff.life <= 1)
 								ebuff.life = 1;
@@ -800,7 +925,7 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 						Effect expl = new Effect(0, ebuff.pos.x, ebuff.pos.y, 0);
 						effects.add(expl);// 폭발 이펙트 추가
 						ebuff.pos.x = -10000;// 다음 처리에서 소거될 수 있도록
-						score += 50;
+						score[G.P1] += 50;
 						// enemies.remove(ebuff);//적 캐릭터 소거
 					}
 
@@ -810,7 +935,7 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 						Bullet bbuff = (Bullet) (bullets.elementAt(k));
 						if (bbuff.from != 0) {
 							bbuff.pos.x = -10000;
-							score++;
+							score[G.P1]++;
 						}
 						// bullets.remove(bbuff);
 					}
