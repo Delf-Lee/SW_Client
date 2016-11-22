@@ -51,7 +51,8 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 	int scrSpeed = 16;// 스크롤 속도
 	int level;// 게임 레벨
 
-	int px, py;// 플레이어 위치. 화면 좌표계에 *100 된 상태.
+	int px1, py1;// 플레이어 위치. 화면 좌표계에 *100 된 상태.
+	int px2, py2;// 플레이어 위치. 화면 좌표계에 *100 된 상태.
 	int playerSpeed;// 플레이어 이동 속도
 	int direction;// 플레이어 이동 방향
 	// 보통 4방향키-8방향 조작계에서는 이동 방향을 각도로 관리하지 않지만 여기서는 장래 터치스크린 인터페이스로
@@ -148,17 +149,10 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 	// 키 이벤트 리스너 처리
 	public void keyPressed(KeyEvent e) {
 		// if(status==2&&(mymode==2||mymode==0)){
-		if (status == 2) {
+		if (status == INGAME) {
 			switch (e.getKeyCode()) {
 			case KeyEvent.VK_SPACE:
 				keybuff |= FIRE_PRESSED;
-				System.out.println("스페이스");
-				if (client == null) {
-					System.out.println("클라이언트 객체 없음");
-				}
-				else {
-					client.sendMsg("teeeest");// delf
-				}
 				break;
 			case KeyEvent.VK_LEFT:
 				keybuff |= LEFT_PRESSED;// 멀티키의 누르기 처리
@@ -181,8 +175,8 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 					playerSpeed++;
 				break;
 			case KeyEvent.VK_3:
-				if (status == 2)
-					status = 4;
+				if (status == INGAME)
+					status = PAUSE;
 				break;
 			/*case KeyEvent.VK_1:
 				System.out.println("이펙트 테스트");
@@ -192,13 +186,16 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 			default:
 				break;
 			}
+			client.sendMsg(Integer.toString(keybuff));
 		}
-		else if (status != 2)
+		else if (status != INGAME) {
 			keybuff = e.getKeyCode();
+		}
+
 	}
 
 	public void keyReleased(KeyEvent e) {
-		// if(status==2&&(mymode==2||mymode==0)){
+		// if(status==2&&(mymode==2||mymode==0)) {
 		// if(status==2){
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_SPACE:
@@ -238,12 +235,14 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 		case TITLE:// 타이틀화면
 			break;
 		case START:// 스타트
-			processPlayer();
-			if (mymode == 2)
-				status = 2;
+			processPlayer1();
+			processPlayer2();
+			if (mymode == APPEARANCE)
+				status = INGAME;
 			break;
 		case INGAME:// 게임화면
-			processPlayer();
+			processPlayer1();
+			processPlayer2();
 			processEnemy();
 			processBullet();
 			processEffect();
@@ -443,8 +442,8 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 
 	public void initPlayerData() {
 		score = 0;
-		px = 0;
-		py = 23000;
+		px1 = 0;
+		py1 = 17000;
 		playerSpeed = 4;
 		direction = -1;
 		// mywidth, myheight;//플레이어 캐릭터의 너비 높이
@@ -453,14 +452,18 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 		mycnt = 0;
 		playerLife = 3;
 		keybuff = 0;
+		
+		// delf: 임시코드
+		px2 = 0;
+		py2 = 30000;
 	}
 
-	public void processPlayer() {
+	public void processPlayer1() {
 		Bullet shoot;
 		switch (mymode) {
 		case APPEARANCE: // 등장 시,
-			px += 200; // 일정 위치까지 앞으로 이동
-			if (px > 20000)
+			px1 += 200; // 일정 위치까지 앞으로 이동
+			if (px1 > 20000)
 				mymode = ONPLAY; // 도착하면 게임 시작
 			break;
 		case UNBEATABLE:
@@ -472,25 +475,24 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 			if (direction != -1 && keyReverse)
 				direction = (direction + 180) % 360;
 			if (direction > -1) {
-				px -= (playerSpeed * Math.sin(Math.toRadians(direction)) * 100);
-				py -= (playerSpeed * Math.cos(Math.toRadians(direction)) * 100);
+				px1 -= (playerSpeed * Math.sin(Math.toRadians(direction)) * 100);
+				py1 -= (playerSpeed * Math.cos(Math.toRadians(direction)) * 100);
 			}
 			if (pImg == 6) {
-				px -= 20;
+				px1 -= 20;
 				if (cnt % 4 == 0 || isShotKeyPressed) {
 					isShotKeyPressed = false;
-					shoot = new Bullet(px + 2500, py + 1500, 0, 0, RAND(245, 265), 8);
+					shoot = new Bullet(px1 + 2500, py1 + 1500, 0, 0, RAND(245, 265), 8);
 					bullets.add(shoot);
-					shoot = new Bullet(px + 2500, py + 1500, 0, 0, RAND(268, 272), 9);
+					shoot = new Bullet(px1 + 2500, py1 + 1500, 0, 0, RAND(268, 272), 9);
 					bullets.add(shoot);
-					shoot = new Bullet(px + 2500, py + 1500, 0, 0, RAND(275, 295), 8);
+					shoot = new Bullet(px1 + 2500, py1 + 1500, 0, 0, RAND(275, 295), 8);
 					bullets.add(shoot);
 				}
 				// 8myy+=70;
 			}
 			break;
 		case DAMAGE:
-			// keybuff=0;
 			pImg = 8;
 			if (mycnt-- == 0) {
 				mymode = 0;
@@ -498,14 +500,67 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 			}
 			break;
 		}
-		if (px < 2000)
-			px = 2000;
-		if (px > 62000)
-			px = 62000;
-		if (py < 3000)
-			py = 3000;
-		if (py > 45000)
-			py = 45000;
+		if (px1 < 2000)
+			px1 = 2000;
+		if (px1 > 62000)
+			px1 = 62000;
+		if (py1 < 3000)
+			py1 = 3000;
+		if (py1 > 45000)
+			py1 = 45000;
+	}
+	
+	public void processPlayer2() {
+		Bullet shoot;
+		switch (mymode) {
+		case APPEARANCE: // 등장 시,
+			px2 += 200; // 일정 위치까지 앞으로 이동
+			System.out.println(px2);
+			if (px2 > 20000)
+				mymode = ONPLAY; // 도착하면 게임 시작
+			break;
+		case UNBEATABLE:
+			if (mycnt-- == 0) {
+				mymode = ONPLAY;
+				pImg = 0;
+			}
+		case ONPLAY:
+			if (direction != -1 && keyReverse)
+				direction = (direction + 180) % 360;
+			if (direction > -1) {
+				px2 -= (playerSpeed * Math.sin(Math.toRadians(direction)) * 100);
+				py2 -= (playerSpeed * Math.cos(Math.toRadians(direction)) * 100);
+			}
+			if (pImg == 6) {
+				px2 -= 20;
+				if (cnt % 4 == 0 || isShotKeyPressed) {
+					isShotKeyPressed = false;
+					shoot = new Bullet(px2 + 2500, py2 + 1500, 0, 0, RAND(245, 265), 8);
+					bullets.add(shoot);
+					shoot = new Bullet(px2 + 2500, py2 + 1500, 0, 0, RAND(268, 272), 9);
+					bullets.add(shoot);
+					shoot = new Bullet(px2 + 2500, py2 + 1500, 0, 0, RAND(275, 295), 8);
+					bullets.add(shoot);
+				}
+				// 8myy+=70;
+			}
+			break;
+		case DAMAGE:
+			pImg = 8;
+			if (mycnt-- == 0) {
+				mymode = 0;
+				mycnt = 50;
+			}
+			break;
+		}
+		if (px2 < 2000)
+			px2 = 2000;
+		if (px2 > 62000)
+			px2 = 62000;
+		if (py2 < 3000)
+			py2 = 3000;
+		if (py2 > 45000)
+			py2 = 45000;
 	}
 
 	public void processEnemy() {
@@ -567,13 +622,13 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 			else { // 적이 쏜 총알이 플레이어에게 명중 판정
 				if (mymode != ONPLAY)
 					continue;
-				dist = getDistance(px / 100, py / 100, bullet.dis.x, bullet.dis.y);
+				dist = getDistance(px1 / 100, py1 / 100, bullet.dis.x, bullet.dis.y);
 				if (dist < 500) {
 					if (myshield == 0) {
 						mymode = 3;
 						mycnt = 30;
 						bullets.remove(i);
-						effect = new Effect(0, px - 2000, py, 0);
+						effect = new Effect(0, px1 - 2000, py1, 0);
 						effects.add(effect);
 						if (--playerLife <= 0) {
 							status = 3;
@@ -716,7 +771,7 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 		Item buff;
 		for (i = 0; i < items.size(); i++) {
 			buff = (Item) (items.elementAt(i));
-			dist = getDistance(px / 100, py / 100, buff.dis.x, buff.dis.y);
+			dist = getDistance(px1 / 100, py1 / 100, buff.dis.x, buff.dis.y);
 			if (dist < 1000) {// 아이템 획득
 				switch (buff.kind) {
 				case SCORE:// 일반 득점

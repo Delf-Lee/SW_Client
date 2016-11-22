@@ -16,6 +16,7 @@ public class Client extends Thread {
 		ShootingFrame wsf = new ShootingFrame(this);
 	}
 
+	/** 서버와 연결 */
 	public void connectServer() {
 		try {
 			socket = new Socket("127.0.0.1", 30023);
@@ -32,6 +33,7 @@ public class Client extends Thread {
 		System.out.println("설정 끝");
 	}
 
+	/** 스트림 설정 */
 	public void Connection() { // 실직 적인 메소드 연결부분
 		try { // 스트림 설정
 			System.out.println("스트림 설정");
@@ -61,25 +63,26 @@ public class Client extends Thread {
 				}
 			}
 		} // while문 끝
-		System.out.println("while 나옴");
 	} // run메소드 끝
 
 	public static void main(String[] args) {
 		new Client();
 	}
 
+	/** 서버에게 메시지를 전송한다. 
+	 * @param str 서벙베게 전송할 메시지 문자열 */
 	public void sendMsg(String str) {
-		str = "teeeeest";
+		System.out.println("보내려는 메시지: " + str);
 		byte[] bb = new byte[128];
 		bb = str.getBytes();
 		try {
-			System.out.println("보냄");
 			dos.write(bb);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} // .writeUTF(str);
+		}
 	}
+	/** 서버로 부터 메시지를 받아 저장하고 반환한다. 
+	 * @return 서버로부터 받은 메시지 문자열 */
 	private String readMeg() throws IOException {
 		byte[] buffer = new byte[128];
 		String msg;

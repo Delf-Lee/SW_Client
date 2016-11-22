@@ -72,35 +72,35 @@ public class GameScreen extends Canvas {
 		// 실제 그리는 동작은 이 함수에서 모두 행한다.
 		switch (main.status) {
 		case 0:// 타이틀화면
-			Draw_TITLE();
+			drawTitle();
 			gc.setColor(new Color(0));
 			gc.drawString("Education ver.", 10, 40);
 			break;
 		case 1:// 게임 스타트
-			Draw_BG();
-			drawP1();
-			drawP2();
-			Draw_BG2();
+			drawBackgroundCloud();
+			drawPlayer1();
+			drawPlayer2();
+			drawBackgroundFog();
 			drawImageAnc(_start, 0, 270, 3);
 			break;
 		case 2:// 게임화면
 		case 4:// 일시정지
-			Draw_BG();
-			drawP1();
-			drawP2();
-			Draw_ENEMY();
-			Draw_BULLET();
+			drawBackgroundCloud();
+			drawPlayer1();
+			drawPlayer2();
+			drawEnemy();
+			drawBullet();
 			Draw_EFFECT();
 			Draw_ITEM();
-			Draw_BG2();
+			drawBackgroundFog();
 			Draw_UI();
 			break;
 
 		case 3:// 게임오버
-			Draw_BG();
-			Draw_ENEMY();
-			Draw_BULLET();
-			Draw_BG2();
+			drawBackgroundCloud();
+			drawEnemy();
+			drawBullet();
+			drawBackgroundFog();
 			drawImageAnc(_over, 320, 240, 4);
 			Draw_UI();
 			break;
@@ -109,13 +109,13 @@ public class GameScreen extends Canvas {
 		}
 	}
 
-	public void Draw_TITLE() {
+	public void drawTitle() {
 		gc.drawImage(title, 0, 0, this);
 		if (cnt % 20 < 10)
 			gc.drawImage(title_key, 320 - 201, 370, this);
 	}
 
-	public void Draw_BG() {
+	public void drawBackgroundCloud() {
 		int i;
 		// 원경을 움직이기 위한 추가 코드
 		int step1 = (cnt % 2560) / 2;// 2013-10
@@ -130,7 +130,7 @@ public class GameScreen extends Canvas {
 			gc.drawImage(cloud[2], i * 64 - (cnt % 128) * 2, 395, this);
 	}
 
-	public void Draw_BG2() {
+	public void drawBackgroundFog() {
 		int i;
 		step = (cnt % (bg_f.getWidth(this) / main.scrSpeed)) * main.scrSpeed;
 		gc.drawImage(bg_f, 0 - step, 540 - bg_f.getHeight(this) + v[(cnt / 20) % 8] * 2, this);
@@ -142,65 +142,65 @@ public class GameScreen extends Canvas {
 			gc.drawImage(cloud[0], i * 128 - (cnt % 128) * 8, 435, this);
 	}
 
-	public void drawP1() {
-		int myx, myy;
-		myx = main.px / 100;
-		myy = main.py / 100;
+	public void drawPlayer1() {
+		int px, py;
+		px = main.px1 / 100;
+		py = main.py1 / 100;
 		switch (main.mymode) {
 		case ShootingFrame.UNBEATABLE:// 무적
 		case ShootingFrame.APPEARANCE:// 무적이면서 등장
 			if (main.cnt % 20 < 10)
-				drawImageAnc(chr[2 + (main.cnt / 5) % 2], myx, myy, 4);
+				drawImageAnc(chr[2 + (main.cnt / 5) % 2], px, py, 4);
 			break;
 		case ShootingFrame.ONPLAY:// 온플레이
 			if (main.pImg == 6)
-				drawImageAnc(chr[main.pImg + (main.cnt / 3) % 2], myx, myy, 4);
+				drawImageAnc(chr[main.pImg + (main.cnt / 3) % 2], px, py, 4);
 			else if (main.pImg != 8)
-				drawImageAnc(chr[main.pImg + (main.cnt / 5) % 2], myx, myy, 4);
+				drawImageAnc(chr[main.pImg + (main.cnt / 5) % 2], px, py, 4);
 			else if (main.pImg == 8)
-				drawImageAnc(chr[main.pImg], myx, myy, 4);
+				drawImageAnc(chr[main.pImg], px, py, 4);
 			break;
 		case ShootingFrame.DAMAGE:// 데미지
 			if (main.cnt % 6 < 3)
-				drawImageAnc(chr[8], myx, myy, 4);
+				drawImageAnc(chr[8], px, py, 4);
 			break;
 		}
 		if (main.myshield > 2)
-			drawImageAnc(shield, (int) (Math.sin(Math.toRadians((cnt % 72) * 5)) * 16 + myx), (int) (Math.cos(Math.toRadians((cnt % 72) * 5)) * 16 + myy), (main.cnt / 6 % 7) * 64, 0, 64, 64, 4);// 실드 라이프가 3 이상
+			drawImageAnc(shield, (int) (Math.sin(Math.toRadians((cnt % 72) * 5)) * 16 + px), (int) (Math.cos(Math.toRadians((cnt % 72) * 5)) * 16 + py), (main.cnt / 6 % 7) * 64, 0, 64, 64, 4);// 실드 라이프가 3 이상
 		else if (main.myshield > 0 && main.cnt % 4 < 2)
-			drawImageAnc(shield, (int) (Math.sin(Math.toRadians((cnt % 72) * 5)) * 16 + myx), (int) (Math.cos(Math.toRadians((cnt % 72) * 5)) * 16 + myy), (main.cnt / 6 % 7) * 64, 0, 64, 64, 4);// 실드 라이프가 1, 2면 점멸
-	}
-	
-	public void drawP2() {
-		int myx, myy;
-		myx = 100;
-		myy = 100;
-		switch (main.mymode) {
-		case ShootingFrame.UNBEATABLE:// 무적
-		case ShootingFrame.APPEARANCE:// 무적이면서 등장
-			if (main.cnt % 20 < 10)
-				drawImageAnc(chr[2 + (main.cnt / 5) % 2], myx, myy, 4);
-			break;
-		case ShootingFrame.ONPLAY:// 온플레이
-			if (main.pImg == 6)
-				drawImageAnc(chr[main.pImg + (main.cnt / 3) % 2], myx, myy, 4);
-			else if (main.pImg != 8)
-				drawImageAnc(chr[main.pImg + (main.cnt / 5) % 2], myx, myy, 4);
-			else if (main.pImg == 8)
-				drawImageAnc(chr[main.pImg], myx, myy, 4);
-			break;
-		case ShootingFrame.DAMAGE:// 데미지
-			if (main.cnt % 6 < 3)
-				drawImageAnc(chr[8], myx, myy, 4);
-			break;
-		}
-		if (main.myshield > 2)
-			drawImageAnc(shield, (int) (Math.sin(Math.toRadians((cnt % 72) * 5)) * 16 + myx), (int) (Math.cos(Math.toRadians((cnt % 72) * 5)) * 16 + myy), (main.cnt / 6 % 7) * 64, 0, 64, 64, 4);// 실드 라이프가 3 이상
-		else if (main.myshield > 0 && main.cnt % 4 < 2)
-			drawImageAnc(shield, (int) (Math.sin(Math.toRadians((cnt % 72) * 5)) * 16 + myx), (int) (Math.cos(Math.toRadians((cnt % 72) * 5)) * 16 + myy), (main.cnt / 6 % 7) * 64, 0, 64, 64, 4);// 실드 라이프가 1, 2면 점멸
+			drawImageAnc(shield, (int) (Math.sin(Math.toRadians((cnt % 72) * 5)) * 16 + px), (int) (Math.cos(Math.toRadians((cnt % 72) * 5)) * 16 + py), (main.cnt / 6 % 7) * 64, 0, 64, 64, 4);// 실드 라이프가 1, 2면 점멸
 	}
 
-	public void Draw_ENEMY() {
+	public void drawPlayer2() {
+		int px, py;
+		px = main.px2 / 100;
+		py = main.py2 / 100;
+		switch (main.mymode) {
+		case ShootingFrame.UNBEATABLE:// 무적
+		case ShootingFrame.APPEARANCE:// 무적이면서 등장
+			if (main.cnt % 20 < 10)
+				drawImageAnc(chr[2 + (main.cnt / 5) % 2], px, py, 4);
+			break;
+		case ShootingFrame.ONPLAY:// 온플레이
+			if (main.pImg == 6)
+				drawImageAnc(chr[main.pImg + (main.cnt / 3) % 2], px, py, 4);
+			else if (main.pImg != 8)
+				drawImageAnc(chr[main.pImg + (main.cnt / 5) % 2], px, py, 4);
+			else if (main.pImg == 8)
+				drawImageAnc(chr[main.pImg], px, py, 4);
+			break;
+		case ShootingFrame.DAMAGE:// 데미지
+			if (main.cnt % 6 < 3)
+				drawImageAnc(chr[8], px, py, 4);
+			break;
+		}
+		if (main.myshield > 2)
+			drawImageAnc(shield, (int) (Math.sin(Math.toRadians((cnt % 72) * 5)) * 16 + px), (int) (Math.cos(Math.toRadians((cnt % 72) * 5)) * 16 + py), (main.cnt / 6 % 7) * 64, 0, 64, 64, 4);// 실드 라이프가 3 이상
+		else if (main.myshield > 0 && main.cnt % 4 < 2)
+			drawImageAnc(shield, (int) (Math.sin(Math.toRadians((cnt % 72) * 5)) * 16 + px), (int) (Math.cos(Math.toRadians((cnt % 72) * 5)) * 16 + py), (main.cnt / 6 % 7) * 64, 0, 64, 64, 4);// 실드 라이프가 1, 2면 점멸
+	}
+
+	public void drawEnemy() {
 		int i;
 		Enemy buff;
 		for (i = 0; i < main.enemies.size(); i++) {
@@ -233,7 +233,7 @@ public class GameScreen extends Canvas {
 		}
 	}
 
-	public void Draw_BULLET() {
+	public void drawBullet() {
 		Bullet buff;
 		int i;
 		for (i = 0; i < main.bullets.size(); i++) {
