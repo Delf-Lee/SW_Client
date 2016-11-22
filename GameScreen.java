@@ -8,6 +8,7 @@ public class GameScreen extends Canvas {
 	// 실제 게임의 메인 제어를 행하는 클래스
 	// 가급적 화면 출력에서는 게임에서 공통으로 쓰이는 변수값의 변경 등을 행하지 않는 것이 좋다.
 	ShootingFrame main;
+
 	int cnt, gamecnt;
 
 	// 화면 그리기용 변수
@@ -78,6 +79,7 @@ public class GameScreen extends Canvas {
 		case 1:// 게임 스타트
 			Draw_BG();
 			drawP1();
+			drawP2();
 			Draw_BG2();
 			drawImageAnc(_start, 0, 270, 3);
 			break;
@@ -85,6 +87,7 @@ public class GameScreen extends Canvas {
 		case 4:// 일시정지
 			Draw_BG();
 			drawP1();
+			drawP2();
 			Draw_ENEMY();
 			Draw_BULLET();
 			Draw_EFFECT();
@@ -170,8 +173,8 @@ public class GameScreen extends Canvas {
 	
 	public void drawP2() {
 		int myx, myy;
-		myx = main.px / 100;
-		myy = main.py / 100;
+		myx = 100;
+		myy = 100;
 		switch (main.mymode) {
 		case ShootingFrame.UNBEATABLE:// 무적
 		case ShootingFrame.APPEARANCE:// 무적이면서 등장

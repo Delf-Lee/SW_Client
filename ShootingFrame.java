@@ -29,10 +29,11 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 	public final static int FIRE_PRESSED = 0x010;
 
 	GameScreen gamescreen;// Canvas 객체를 상속한 화면 묘화 메인 클래스
-
 	Thread mainwork;// 스레드 객체
 	boolean loop = true;// 스레드 루프 정보
 	Random rnd = new Random(); // 랜덤 선언
+
+	private Client client;
 
 	// 게임 제어를 위한 변수
 	int status;// 게임의 상태
@@ -82,7 +83,8 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 	// 속도를 위해서는 크기를 넉넉하게 잡은 테이블을 사용하는데, 소스가 지저분해지고, 불필요한 메모리를 낭비하게 되므로 적절한 것을 선택한다.
 	// 또, C 베이스 플랫폼으로 이식할 경우를 고려야 한다면 class나 Vector, Hashtable 같은 것은 이식하기 어려워지므로 가급적 피한다.
 
-	public ShootingFrame() {
+	public ShootingFrame(Client client) {
+		this.client = client;
 
 		// 기본적인 윈도우 정보 세팅. 게임과 직접적인 상관은 없이 게임 실행을 위한 창을 준비하는 과정.
 		setIconImage(makeImage("./rsc/icon.png"));
@@ -127,7 +129,7 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 
 				gamescreen.repaint();// 화면 리페인트
 				keyprocess();// 키 처리
-				/* 키를 보내는 작업 */
+				/* 키를 서버 보내는 작업 */
 				process();// 각종 처리
 
 				if (System.currentTimeMillis() - pretime < delay)
@@ -150,6 +152,13 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 			switch (e.getKeyCode()) {
 			case KeyEvent.VK_SPACE:
 				keybuff |= FIRE_PRESSED;
+				System.out.println("스페이스");
+				if (client == null) {
+					System.out.println("클라이언트 객체 없음");
+				}
+				else {
+					client.sendMsg("teeeest");// delf
+				}
 				break;
 			case KeyEvent.VK_LEFT:
 				keybuff |= LEFT_PRESSED;// 멀티키의 누르기 처리
@@ -222,6 +231,7 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 	public final static int INGAME = 2;
 	public final static int GAMEOVER = 3;
 	public final static int PAUSE = 4;
+
 	// 각종 판단, 변수나 이벤트, CPU 관련 처리
 	private void process() {
 		switch (status) {
@@ -696,10 +706,11 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 			}
 		}
 	}
-	
+
 	public static final int SCORE = 0;
 	public static final int SHIELD = 1;
 	public static final int DESTROY_ALL_ENEMIES = 2;
+
 	public void processItem() {
 		int i, dist;
 		Item buff;
@@ -714,9 +725,9 @@ public class ShootingFrame extends Frame implements KeyListener, Runnable {
 				case SHIELD:// 실드
 					myshield = 5;
 					break;
-				case DESTROY_ALL_ENEMIES :// 전멸 아이템
-						// Enemy ebuff;
-						// Effect expl;
+				case DESTROY_ALL_ENEMIES:// 전멸 아이템
+					// Enemy ebuff;
+					// Effect expl;
 
 					// 적 전멸 효과
 					int j = enemies.size();
