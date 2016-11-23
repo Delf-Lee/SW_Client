@@ -3,7 +3,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-
+/** @author delf */
 public class Client extends Thread {
 
 	public final static int CMD = 0;

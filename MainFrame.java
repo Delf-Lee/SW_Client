@@ -208,12 +208,15 @@ public class MainFrame extends Frame implements KeyListener, Runnable {
 	}
 
 	/** keybuf에 저장 된 키 값을 서버에 전송. "command id key"의 형식으로 전송된다.
-	 * @param key 현재 눌려져있는 키 값에 해당하는 정수. 현재 keybuff에 저장되어 있는 정수. */
+	 * @param key 현재 눌려져있는 키 값에 해당하는 정수. 현재 keybuff에 저장되어 있는 정수.
+	 * @author delf*/
 	public void sendKey(int key) {
 		String msg = createMsg(G.KEY, id, key + "");
 		client.sendMsg(msg);
 	}
-
+	/** 입력 받은 파라미터들로 프로토콜 형식으로 만든다.
+	 * @param par 프로토콜을 만드는 요소 문자열
+	 * @author delf */
 	public String createMsg(String... par) {
 		String msg = "";
 		for (int i = 0; i < par.length - 1; i++) {
