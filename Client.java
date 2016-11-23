@@ -75,7 +75,7 @@ public class Client extends Thread {
 	 * @param msg 서버로 부터 받은 메시지 */
 	public void handlingMsg(String msg) {
 		String splitMsg[];
-		msg = msg.trim(); // delf: 받은 메시지를 쪼갠다.
+		// msg = msg.trim(); // delf: 받은 메시지를 쪼갠다.
 		splitMsg = msg.split(G.BLANK); // delf: 빈칸을 기준으로 나누어 담는다.
 		int target = Integer.parseInt(splitMsg[ID]); // delf: 메시지에 대한 타겟을 저장
 
@@ -117,6 +117,7 @@ public class Client extends Thread {
 
 		dis.read(buffer); // 대기
 		msg = new String(buffer);
+		msg = msg.trim(); // delf: 받은 메시지를 쪼갠다.
 		System.out.println("받은 메세지: " + msg);
 
 		return msg;

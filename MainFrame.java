@@ -203,7 +203,9 @@ public class MainFrame extends Frame implements KeyListener, Runnable {
 			keybuff = e.getKeyCode();
 			System.out.println("눌린 키는 " + keybuff);
 		}
-		sendKey(keybuff); // delf: 눌린 키를 서버에 전송한다.
+		if (keybuff != 0x00) {
+			sendKey(keybuff); // delf: 눌린 키를 서버에 전송한다.
+		}
 
 	}
 
@@ -214,6 +216,7 @@ public class MainFrame extends Frame implements KeyListener, Runnable {
 		String msg = createMsg(G.KEY, id, key + "");
 		client.sendMsg(msg);
 	}
+
 	/** 입력 받은 파라미터들로 프로토콜 형식으로 만든다.
 	 * @param par 프로토콜을 만드는 요소 문자열
 	 * @author delf */
@@ -247,7 +250,7 @@ public class MainFrame extends Frame implements KeyListener, Runnable {
 			keybuff &= ~DOWN_PRESSED;
 			break;
 		}
-		sendKey(keybuff); // delf: 떼진 키를 서버에 전송한다.
+		sendKey(keybuff); // delf: 눌린 키를 서버에 전송한다.
 		// }
 		// PC 환경에서는 기본적으로 키보드의 반복입력을 지원하지만,
 		// 그렇지 않은 플랫폼에서는 키 버퍼값에 떼고 눌렀을 때마다 값을 변경해 리피트 여부를 제어한다.
