@@ -3,6 +3,8 @@ import java.awt.Frame;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.Toolkit;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.BufferedReader;
@@ -11,7 +13,7 @@ import java.util.Random;
 import java.util.Vector;
 
 // delf: 이름을 GameFrame으로 변경
-public class MainFrame extends Frame implements KeyListener, Runnable {
+public class MainFrame extends Frame implements FocusListener, KeyListener, Runnable {
 	// 기본 윈도우를 형성하는 프레임을 만든다
 	// KeyListener : 키보드 입력 이벤트를 받는다
 	// Runnable : 스레드를 가능하게 한다
@@ -95,21 +97,11 @@ public class MainFrame extends Frame implements KeyListener, Runnable {
 		setBounds(100, 100, 640, 480);// 윈도우의 시작 위치와 너비 높이 지정
 		setResizable(false);// 윈도우의 크기를 변경할 수 없음
 		setVisible(true);// 윈도우 표시
-		if (getKeyListeners() == null) {
-			System.out.println("리스너 없어짐");
-		}
-		else {
-			System.out.println(getKeyListeners());
-		}
+		
 		addKeyListener(this);// 키 입력 이벤트 리스너 활성화
 		addWindowListener(new MyWindowAdapter());// 윈도우의 닫기 버튼 활성화
-		if (getKeyListeners() == null) {
-			System.out.println("리스너 없어짐");
-		}
-		else {
-			System.out.println(getKeyListeners());
-		}
-
+		addFocusListener(this);
+		
 		gamescreen = new GameScreen(this);// 화면 묘화를 위한 캔버스 객체
 		gamescreen.setBounds(0, 0, screenWidth, screenHeight);
 		add(gamescreen);// Canvas 객체를 프레임에 올린다
@@ -213,20 +205,9 @@ public class MainFrame extends Frame implements KeyListener, Runnable {
 	 * @param key 현재 눌려져있는 키 값에 해당하는 정수. 현재 keybuff에 저장되어 있는 정수.
 	 * @author delf*/
 	public void sendKey(int key) {
-		String msg = createMsg(G.KEY, id, key + "");
+		System.out.println("pressed key: " + key);
+		String msg = Client.createMsg(G.KEY, id, key + "");
 		client.sendMsg(msg);
-	}
-
-	/** 입력 받은 파라미터들로 프로토콜 형식으로 만든다.
-	 * @param par 프로토콜을 만드는 요소 문자열
-	 * @author delf */
-	public String createMsg(String... par) {
-		String msg = "";
-		for (int i = 0; i < par.length - 1; i++) {
-			msg += par[i] + G.BLANK;
-		}
-		msg += par[par.length - 1];
-		return msg;
 	}
 
 	public void keyReleased(KeyEvent e) {
@@ -1007,5 +988,15 @@ public class MainFrame extends Frame implements KeyListener, Runnable {
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public void focusGained(FocusEvent e) {
+		
+	}
+
+	@Override
+	public void focusLost(FocusEvent e) {
+		this.requestFocus();
 	}
 }
