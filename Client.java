@@ -126,39 +126,12 @@ public class Client extends Thread {
 
 	/** 타겟의 키 값을 다음과 같이 설정 */
 	public void setControl(int id, int key) {
-		System.out.println("######################### id = " + id + ", key = " + key);
 		game.control[id] = key;
 	}
 
 	public static void main(String[] args) {
 		new Client();
 	}
-
-	/** 서버에게 메시지를 전송한다.
-	 * @param str 서버에게 전송할 메시지 문자열 */
-	// public void sendMsg(String str) {
-	// byte[] bb = new byte[BUFSIZE];
-	// bb = str.getBytes();
-	// try {
-	// dos.write(bb);
-	// } catch (IOException e) {
-	// e.printStackTrace();
-	// }
-	// }
-
-	/** 서버로 부터 메시지를 받아 저장하고 반환한다.
-	 * @return 서버로부터 받은 메시지 문자열 */
-	// private String readMeg() throws IOException {
-	// byte[] buffer = new byte[BUFSIZE];
-	// String msg;
-	//
-	// dis.read(buffer); // 대기
-	// msg = new String(buffer);
-	// msg = msg.trim(); // delf: 공백 정리
-	// System.out.println("받은 메세지: " + msg);
-	//
-	// return msg;
-	// }
 
 	public int getPlayerId() {
 		return this.id;
@@ -191,12 +164,6 @@ public class Client extends Thread {
 		return msg;
 	}
 
-	/** 소켓의 포트를 설정한다.
-	 * @param port 수신소켓에 할당될 포트번호 전송소켓 포트번호는 port+1로 할당된다. */
-	private void setSocketPort(int port) {
-		SENDPORT = port;
-		RECEIVEPORT = port + 1;
-	}
 
 	private void initByte(byte[] b) {
 		for (int i = 0; i < b.length; i++) {

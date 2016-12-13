@@ -5,7 +5,7 @@ public class MessageQueue extends Thread {
 	public final static int KEY = 2;
 	public final static int DELAY = 3;
 
-	private Vector<Message> messages = new Vector<Message>();
+	private Vector<Message> messages = new Vector<Message>(); // 메시지를을 저장할 Vector
 	private Client client;
 	private long lastEnQueueTime = getNow();
 	private long interval;
@@ -21,7 +21,6 @@ public class MessageQueue extends Thread {
 			lastEnQueueTime = getNow();
 			init = false;
 		}
-		System.out.println("############################### enQueue");
 		String splitMsg[];
 		msg = msg.trim();
 		splitMsg = msg.split(G.BLANK);
@@ -74,14 +73,14 @@ public class MessageQueue extends Thread {
 				e.printStackTrace();
 			}
 		}
-		// System.out.println("스레드가 끝남ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ");
 	}
 }
 
+/** 메시지 구조 */
 class Message {
-	int id;
-	int key;
-	long delay;
+	int id; // 보낸 플레이어 id
+	int key; // 입력한 키 값
+	long delay; // (netword delay) + (front msg와 rear msg 사이 시간)
 
 	public Message(int id, int key, long delay) {
 		super();
