@@ -201,6 +201,13 @@ public class GameScreen extends Canvas {
 		else if (main.myshield > 0 && main.cnt % 4 < 2)
 			drawImageAnc(shield, (int) (Math.sin(Math.toRadians((cnt % 72) * 5)) * 16 + px), (int) (Math.cos(Math.toRadians((cnt % 72) * 5)) * 16 + py), (main.cnt / 6 % 7) * 64, 0, 64, 64, 4);// 실드 라이프가 1, 2면 점멸
 	}
+	
+	
+	
+	public final static int NEUROI_APPEAR = 0;
+	public final static int NEUROI_STOP = 1;
+	public final static int NEUROI_MOVE_DOWN = 2;
+	
 	public void drawEnemy() {
 		int i;
 		Enemy buff;

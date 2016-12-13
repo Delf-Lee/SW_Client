@@ -50,12 +50,31 @@ public class Enemy {
 		*/
 	}
 
+	// 적의 종류
+	public static final int NOMAL_ENEMY = 0;
+	public static final int BOSS = 1;
+	public static final int NUROI_ENEMY = 2;
+
+	// 공격 패턴
+	public static final int THREE_ATTACK = 0;
+	public static final int FOUR_ATTACK = 1;
+	public static final int SINGLE_ATTACK = 2;
+	public static final int TRIPLE_ATTACK = 3;
+	public static final int NONE = 4;
+
+	public final static int FROM_LEFT = 0;
+	public final static int STOP_MOMENT = 1;
+	public final static int MOVE_DOWN = 2;
+	public final static int MOVE_UP = 3;
+	public final static int STOP_SHOT = 4;
+	public final static int EXIT_BACK = 5;
+
 	public boolean move() {
 		boolean ret = true;
 
 		// 우선은 공격
 		switch (kind) {
-		case 2:// 위치 네우로이의 경우
+		case NUROI_ENEMY:// 위치 네우로이의 경우
 			if (mode != 4)
 				break;
 			if (cnt < 30 && cnt % 5 == 0) {
@@ -73,15 +92,15 @@ public class Enemy {
 				}
 			}
 			break;
-		case 0:// 일반 적 캐릭터일 경우
+		case NOMAL_ENEMY:// 일반 적 캐릭터일 경우
 			switch (shoottype) {// 공격 형태에 따라 각기 다른 공격을 한다.
-			case 0:// 플레이어를 향해 3발을 점사한다
+			case THREE_ATTACK:// 플레이어를 향해 3발을 점사한다
 				if (cnt % 100 == 0 || cnt % 103 == 0 || cnt % 106 == 0) {// cnt로 공격 간격을 체크한다
 					bul = new Bullet(pos.x, pos.y, 2, 2, main.getAngle(pos.x, pos.y, main.x[G.P1], main.y[G.P1]), 3);
 					main.bullets.add(bul);
 				}
 				break;
-			case 1:// 타이머에 맞춰 4방향탄을 발사한다
+			case FOUR_ATTACK:// 타이머에 맞춰 4방향탄을 발사한다
 				if (cnt % 90 == 0 || cnt % 100 == 0 || cnt % 110 == 0) {
 					bul = new Bullet(pos.x, pos.y, 2, 2, (0 + (cnt % 36) * 10) % 360, 3);
 					main.bullets.add(bul);
@@ -93,13 +112,13 @@ public class Enemy {
 					main.bullets.add(bul);
 				}
 				break;
-			case 2:// 짧은 간격으로 플레이어 근처를 향해 한 발씩 발사한다
+			case SINGLE_ATTACK:// 짧은 간격으로 플레이어 근처를 향해 한 발씩 발사한다
 				if (cnt % 30 == 0 || cnt % 60 == 0 || cnt % 90 == 0 || cnt % 120 == 0 || cnt % 150 == 0 || cnt % 180 == 0) {
 					bul = new Bullet(pos.x, pos.y, 2, 1, (main.getAngle(pos.x, pos.y, main.x[G.P1], main.y[G.P1]) + main.RAND(-20, 20)) % 360, 2);
 					main.bullets.add(bul);
 				}
 				break;
-			case 3:// 플레이어를 향해 3갈래탄을 발사한다
+			case TRIPLE_ATTACK:// 플레이어를 향해 3갈래탄을 발사한다
 				if (cnt % 90 == 0 || cnt % 110 == 0 || cnt % 130 == 0) {
 					bul = new Bullet(pos.x, pos.y, 2, 2, main.getAngle(pos.x, pos.y, main.x[G.P1], main.y[G.P1]), 2);
 					main.bullets.add(bul);
@@ -109,11 +128,11 @@ public class Enemy {
 					main.bullets.add(bul);
 				}
 				break;
-			case 4:// 아무런 공격도 하지않는다
+			case NONE:// 아무런 공격도 하지않는다
 				break;
 			}
 			break;
-		case 1:// 보스 캐릭터일 경우는, mode에 따라 공격 방식을 바꾼다.
+		case BOSS:// 보스 캐릭터일 경우는, mode에 따라 공격 방식을 바꾼다.
 			int lv, i;
 			switch (mode) {// mode 값은 원래 움직임을 결정한다. 움직임에 맞춰 공격 방식도 바꿔준다.
 			case 5:
@@ -150,7 +169,7 @@ public class Enemy {
 
 		// 이동 처리
 		switch (kind) {
-		case 2:// 위치 네우로이의 경우
+		case NUROI_ENEMY:// 위치 네우로이의 경우
 			/*
 			위치 네우로이 이동 시나리오
 			1. 오른쪽에서 등장하여 왼쪽으로 이동하다 화면 70~80% 정도 위치에 정지한다.
@@ -161,14 +180,14 @@ public class Enemy {
 			6. 뒤로 돌아 물러간다 
 			*/
 			switch (mode) {
-			case 0:// 왼쪽에서 오른쪽으로 등장
+			case FROM_LEFT:// 왼쪽에서 오른쪽으로 등장
 				pos.x -= 500;
 				if (cnt >= 0 && pos.x < main.screenWidth * 80) {
 					mode = 1;
 					cnt = 0;
 				}
 				break;
-			case 1:// 제자리에서 잠시 정지
+			case STOP_MOMENT:// 제자리에서 잠시 정지
 				if (pos.x > main.screenWidth * 80) {// 만일 아직 충분한 x위치가 아니면 좀 더 왼쪽으로 이동한다
 					mode = 0;
 					break;
@@ -181,7 +200,7 @@ public class Enemy {
 					cnt = 0;
 				}
 				break;
-			case 2:// 아래로 이동
+			case MOVE_DOWN:// 아래로 이동
 				if (pos.y < main.screenHeight * 90 && cnt < 20)
 					pos.y += 250;
 				else {
@@ -189,7 +208,7 @@ public class Enemy {
 					cnt = 0;
 				}
 				break;
-			case 3:// 위로 이동
+			case MOVE_UP:// 위로 이동
 				if (pos.y > 6400 && cnt < 20)
 					pos.y -= 250;
 				else {
@@ -197,38 +216,39 @@ public class Enemy {
 					cnt = 0;
 				}
 				break;
-			case 5:// 뒤로 돌아 퇴장
+			case EXIT_BACK:// 뒤로 돌아 퇴장
 				pos.x += 350;
 				break;
-			case 4:// 정지해서 손을 앞으로 내밀고 총알 발사
+			case STOP_SHOT:// 정지해서 손을 앞으로 내밀고 총알 발사
 				break;
 			}
 			break;
-		case 0:// 일반 캐릭터
+
+		case NOMAL_ENEMY:// 일반 캐릭터
 			switch (mode) {
-			case 0:
+			case FROM_LEFT:
 				pos.x -= 500;
 				pos.y += 80;
 				if (pos.x < main.x[G.P1])
 					mode = 2;
 				break;
-			case 1:
+			case STOP_MOMENT:
 				pos.x -= 500;
 				pos.y -= 80;
 				if (pos.x < main.x[G.P1])
 					mode = 3;
 				break;
-			case 2:
+			case MOVE_DOWN:
 				pos.x += 600;
 				pos.y += 240;
 				break;
-			case 3:
+			case MOVE_UP:
 				pos.x += 600;
 				pos.y -= 240;
 				break;
 			}
 			break;
-		case 1:// 보스캐릭터
+		case BOSS:// 보스캐릭터
 			/*
 				보스 캐릭터 움직임 시나리오 (mode 값에 따라)
 				0. 화면 우측에서 조금 안쪽으로 들어온다.
@@ -243,6 +263,7 @@ public class Enemy {
 				mode = 4;
 			if (main.gameCnt == 2210)
 				mode = 6;
+			
 			switch (mode) {
 			case 0:
 				pos.x -= 100;
@@ -318,4 +339,3 @@ public class Enemy {
 		return ret;
 	}
 }
-
