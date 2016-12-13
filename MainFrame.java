@@ -67,8 +67,8 @@ public class MainFrame extends Frame implements FocusListener, KeyListener, Runn
 	public final static int DAMAGE = 3;
 	public final static int DEATH = 4;
 
-	int pImg;// 플레이어 이미지
-	int mycnt;
+	int pImg[] = new int[2];// 플레이어 이미지
+	int mycnt[] = new int[2];
 	boolean isShotKeyPressed = false;// 총알 발사가 눌리고 있는가
 	int myshield;// 실드 남은 수비량
 	boolean keyReverse = false;// 키보드 반전
@@ -77,8 +77,10 @@ public class MainFrame extends Frame implements FocusListener, KeyListener, Runn
 	int screenHeight = 480;// 게임 화면 높이
 
 	Vector<Bullet> bullets = new Vector<Bullet>(); // 총알 관리. 총알의 갯수를 예상할 수 없기 때문에 가변적으로 관리한다.
+	Vector<Bullet> bullets2 = new Vector<Bullet>();
 	Vector<Enemy> enemies = new Vector<Enemy>(); // 적 캐릭터 관리.
 	Vector<Effect> effects = new Vector<Effect>(); // 이펙트 관리
+	Vector<Effect> effects2 = new Vector<Effect>();
 	Vector<Item> items = new Vector<Item>(); // 아이템 관리
 	// 가변 테이블을 사용한 관리는 처리속도에 악영향을 끼칠 수 있다.
 
@@ -301,162 +303,162 @@ public class MainFrame extends Frame implements FocusListener, KeyListener, Runn
 				switch (control[G.P1]) {
 				case 0:
 					direction[G.P1] = -1;
-					pImg = 0;
+					pImg[G.P1] = 0;
 					break;
 				case FIRE_PRESSED:
 					direction[G.P1] = -1;
-					pImg = 6;
+					pImg[G.P1]  = 6;
 					break;
 				case UP_PRESSED:
 					direction[G.P1] = 0;
-					pImg = 2;
+					pImg[G.P1]  = 2;
 					break;
 				case UP_PRESSED | FIRE_PRESSED:
 					direction[G.P1] = 0;
-					pImg = 6;
+					pImg[G.P1]  = 6;
 					break;
 				case LEFT_PRESSED:
 					direction[G.P1] = 90;
-					pImg = 4;
+					pImg[G.P1]  = 4;
 					break;
 				case LEFT_PRESSED | FIRE_PRESSED:
 					direction[G.P1] = 90;
-					pImg = 6;
+					pImg[G.P1]  = 6;
 					break;
 				case RIGHT_PRESSED:
 					direction[G.P1] = 270;
-					pImg = 2;
+					pImg[G.P1]  = 2;
 					break;
 				case RIGHT_PRESSED | FIRE_PRESSED:
 					direction[G.P1] = 270;
-					pImg = 6;
+					pImg[G.P1]  = 6;
 					break;
 				case UP_PRESSED | LEFT_PRESSED:
 					direction[G.P1] = 45;
-					pImg = 4;
+					pImg[G.P1]  = 4;
 					break;
 				case UP_PRESSED | LEFT_PRESSED | FIRE_PRESSED:
 					direction[G.P1] = 45;
-					pImg = 6;
+					pImg[G.P1]  = 6;
 					break;
 				case UP_PRESSED | RIGHT_PRESSED:
 					direction[G.P1] = 315;
-					pImg = 2;
+					pImg[G.P1]  = 2;
 					break;
 				case UP_PRESSED | RIGHT_PRESSED | FIRE_PRESSED:
 					direction[G.P1] = 315;
-					pImg = 6;
+					pImg[G.P1]  = 6;
 					break;
 				case DOWN_PRESSED:
 					direction[G.P1] = 180;
-					pImg = 2;
+					pImg[G.P1]  = 2;
 					break;
 				case DOWN_PRESSED | FIRE_PRESSED:
 					direction[G.P1] = 180;
-					pImg = 6;
+					pImg[G.P1]  = 6;
 					break;
 				case DOWN_PRESSED | LEFT_PRESSED:
 					direction[G.P1] = 135;
-					pImg = 4;
+					pImg[G.P1]  = 4;
 					break;
 				case DOWN_PRESSED | LEFT_PRESSED | FIRE_PRESSED:
 					direction[G.P1] = 135;
-					pImg = 6;
+					pImg[G.P1]  = 6;
 					break;
 				case DOWN_PRESSED | RIGHT_PRESSED:
 					direction[G.P1] = 225;
-					pImg = 2;
+					pImg[G.P1]  = 2;
 					break;
 				case DOWN_PRESSED | RIGHT_PRESSED | FIRE_PRESSED:
 					direction[G.P1] = 225;
-					pImg = 6;
+					pImg[G.P1]  = 6;
 					break;
 				default:
 					// System.out.println(""+control[G.P1]);
 					control[G.P1] = 0;
 					direction[G.P1] = -1;
-					pImg = 0;
+					pImg[G.P1]  = 0;
 					break;
 				}
 
 				switch (control[G.P2]) {
 				case 0:
 					direction[G.P2] = -1;
-					pImg = 0;
+					pImg[G.P2]  = 0;
 					break;
 				case FIRE_PRESSED:
 					direction[G.P2] = -1;
-					pImg = 6;
+					pImg[G.P2] = 6;
 					break;
 				case UP_PRESSED:
 					direction[G.P2] = 0;
-					pImg = 2;
+					pImg[G.P2] = 2;
 					break;
 				case UP_PRESSED | FIRE_PRESSED:
 					direction[G.P2] = 0;
-					pImg = 6;
+					pImg[G.P2] = 6;
 					break;
 				case LEFT_PRESSED:
 					direction[G.P2] = 90;
-					pImg = 4;
+					pImg[G.P2] = 4;
 					break;
 				case LEFT_PRESSED | FIRE_PRESSED:
 					direction[G.P2] = 90;
-					pImg = 6;
+					pImg[G.P2] = 6;
 					break;
 				case RIGHT_PRESSED:
 					direction[G.P2] = 270;
-					pImg = 2;
+					pImg[G.P2] = 2;
 					break;
 				case RIGHT_PRESSED | FIRE_PRESSED:
 					direction[G.P2] = 270;
-					pImg = 6;
+					pImg[G.P2] = 6;
 					break;
 				case UP_PRESSED | LEFT_PRESSED:
 					direction[G.P2] = 45;
-					pImg = 4;
+					pImg[G.P2] = 4;
 					break;
 				case UP_PRESSED | LEFT_PRESSED | FIRE_PRESSED:
 					direction[G.P2] = 45;
-					pImg = 6;
+					pImg[G.P2] = 6;
 					break;
 				case UP_PRESSED | RIGHT_PRESSED:
 					direction[G.P2] = 315;
-					pImg = 2;
+					pImg[G.P2] = 2;
 					break;
 				case UP_PRESSED | RIGHT_PRESSED | FIRE_PRESSED:
 					direction[G.P2] = 315;
-					pImg = 6;
+					pImg[G.P2] = 6;
 					break;
 				case DOWN_PRESSED:
 					direction[G.P2] = 180;
-					pImg = 2;
+					pImg[G.P2] = 2;
 					break;
 				case DOWN_PRESSED | FIRE_PRESSED:
 					direction[G.P2] = 180;
-					pImg = 6;
+					pImg[G.P2] = 6;
 					break;
 				case DOWN_PRESSED | LEFT_PRESSED:
 					direction[G.P2] = 135;
-					pImg = 4;
+					pImg[G.P2] = 4;
 					break;
 				case DOWN_PRESSED | LEFT_PRESSED | FIRE_PRESSED:
 					direction[G.P2] = 135;
-					pImg = 6;
+					pImg[G.P2] = 6;
 					break;
 				case DOWN_PRESSED | RIGHT_PRESSED:
 					direction[G.P2] = 225;
-					pImg = 2;
+					pImg[G.P2] = 2;
 					break;
 				case DOWN_PRESSED | RIGHT_PRESSED | FIRE_PRESSED:
 					direction[G.P2] = 225;
-					pImg = 6;
+					pImg[G.P2] = 6;
 					break;
 				default:
 					// System.out.println(""+control[G.P2]);
 					control[G.P2] = 0;
 					direction[G.P2] = -1;
-					pImg = 0;
+					pImg[G.P2] = 0;
 					break;
 				}
 			}
@@ -478,12 +480,14 @@ public class MainFrame extends Frame implements FocusListener, KeyListener, Runn
 			// TODO: 로직 수정 필요
 			if (gameCnt++ >= 200 && control[G.P1] == KeyEvent.VK_3)
 				status = 2;
+			
+			if (gameCnt++ >= 200 && control[G.P2] == KeyEvent.VK_3)
+				status = 2;
 			break;
 		default:
 			break;
 		}
 	}
-
 	// 서브루틴 일람
 	public void initTitle() {
 		/*gamescreen.bg=null;
@@ -517,6 +521,8 @@ public class MainFrame extends Frame implements FocusListener, KeyListener, Runn
 			gamescreen.cloud[i] = makeImage("./rsc/cloud" + i + ".png");
 		for (i = 0; i < 4; i++)
 			gamescreen.bullet[i] = makeImage("./rsc/game/bullet_" + i + ".png");
+		for (i = 0; i < 4; i++)
+			gamescreen.bullets2[i] = makeImage("./rsc/game/bullet_" + i + ".png");
 		gamescreen.enemy[0] = makeImage("./rsc/game/enemy0.png");
 		gamescreen.explo = makeImage("./rsc/game/explode.png");
 		gamescreen.item[0] = makeImage("./rsc/game/item0.png");
@@ -533,8 +539,10 @@ public class MainFrame extends Frame implements FocusListener, KeyListener, Runn
 
 		keybuff = 0;
 		bullets.clear();
+		bullets2.clear();
 		enemies.clear();
 		effects.clear();
+		effects2.clear();
 		items.clear();
 		level = 0;
 		gameCnt = 0;
@@ -552,14 +560,18 @@ public class MainFrame extends Frame implements FocusListener, KeyListener, Runn
 
 	public void initPlayerData() {
 		score[G.P1] = 0;
+		score[G.P2] = 0;
 		x[G.P1] = 0;
 		y[G.P1] = 17000;
 		playerSpeed = 4;
 		direction[G.P1] = -1;
 		// mywidth, myheight;//플레이어 캐릭터의 너비 높이
+		
 		mymode = 1;
-		pImg = 2;
-		mycnt = 0;
+		pImg[G.P1] = 2;
+		pImg[G.P2] = 2;
+		mycnt[G.P1] = 0;
+		mycnt[G.P2] = 0;
 		playerLife[G.P1] = 10000000;
 		keybuff = 0;
 
@@ -573,6 +585,8 @@ public class MainFrame extends Frame implements FocusListener, KeyListener, Runn
 	/** 플레이어에 대한 처리를 한다. 각 상황에 따라 어떻게 행동 해야할지 처리함 */
 	public void processPlayer1() { // delf: 메소드 이름 변경함
 		Bullet shoot;
+		
+		
 		switch (mymode) {
 		case APPEARANCE: // delf: 등장 시,
 			x[G.P1] += 200; // delf: 일정 위치까지 앞으로 이동
@@ -580,9 +594,9 @@ public class MainFrame extends Frame implements FocusListener, KeyListener, Runn
 				mymode = ONPLAY;
 			break;
 		case UNBEATABLE: // delf: 무적
-			if (mycnt-- == 0) { // delf: 일정 시간 지나면
+			if (mycnt[G.P1]-- == 0) { // delf: 일정 시간 지나면
 				mymode = ONPLAY; // delf: 게임 재개
-				pImg = 0;
+				pImg[G.P1] = 0;
 			}
 		case ONPLAY:
 			if (direction[G.P1] != -1 && keyReverse)
@@ -591,7 +605,7 @@ public class MainFrame extends Frame implements FocusListener, KeyListener, Runn
 				x[G.P1] -= (playerSpeed * Math.sin(Math.toRadians(direction[G.P1])) * 100);
 				y[G.P1] -= (playerSpeed * Math.cos(Math.toRadians(direction[G.P1])) * 100);
 			}
-			if (pImg == 6) {
+			if (pImg[G.P1] == 6) {
 				x[G.P1] -= 20;
 				if (cnt % 4 == 0 || isShotKeyPressed) {
 					isShotKeyPressed = false;
@@ -601,15 +615,16 @@ public class MainFrame extends Frame implements FocusListener, KeyListener, Runn
 					bullets.add(shoot);
 					shoot = new Bullet(x[G.P1] + 2500, y[G.P1] + 1500, 0, 0, RAND(275, 295), 8);
 					bullets.add(shoot);
+					
 				}
 				// 8myy+=70;
 			}
 			break;
 		case DAMAGE:
-			pImg = 8;
-			if (mycnt-- == 0) {
+			pImg[G.P1] = 8;
+			if (mycnt[G.P1]-- == 0) {
 				mymode = 0;
-				mycnt = 50;
+				mycnt[G.P1] = 50;
 			}
 			break;
 		}
@@ -622,9 +637,10 @@ public class MainFrame extends Frame implements FocusListener, KeyListener, Runn
 		if (y[G.P1] > 45000)
 			y[G.P1] = 45000;
 	}
-
 	public void processPlayer2() {
 		Bullet shoot;
+		
+	
 		switch (mymode) {
 		case APPEARANCE: // 등장 시,
 			x[G.P2] += 200; // 일정 위치까지 앞으로 이동
@@ -632,9 +648,9 @@ public class MainFrame extends Frame implements FocusListener, KeyListener, Runn
 				mymode = ONPLAY; // 도착하면 게임 시작
 			break;
 		case UNBEATABLE:
-			if (mycnt-- == 0) {
+			if (mycnt[G.P2]-- == 0) {
 				mymode = ONPLAY;
-				pImg = 0;
+				pImg[G.P2] = 0;
 			}
 		case ONPLAY:
 			if (direction[G.P2] != -1 && keyReverse)
@@ -643,25 +659,26 @@ public class MainFrame extends Frame implements FocusListener, KeyListener, Runn
 				x[G.P2] -= (playerSpeed * Math.sin(Math.toRadians(direction[G.P2])) * 100);
 				y[G.P2] -= (playerSpeed * Math.cos(Math.toRadians(direction[G.P2])) * 100);
 			}
-			if (pImg == 6) {
+			if (pImg[G.P2] == 6) {
 				x[G.P2] -= 20;
 				if (cnt % 4 == 0 || isShotKeyPressed) {
 					isShotKeyPressed = false;
-					shoot = new Bullet(x[G.P2] + 2500, y[G.P2] + 1500, 0, 0, RAND(245, 265), 8);
-					bullets.add(shoot);
-					shoot = new Bullet(x[G.P2] + 2500, y[G.P2] + 1500, 0, 0, RAND(268, 272), 9);
-					bullets.add(shoot);
-					shoot = new Bullet(x[G.P2] + 2500, y[G.P2] + 1500, 0, 0, RAND(275, 295), 8);
-					bullets.add(shoot);
+					shoot = new Bullet(x[G.P2] + 2500, y[G.P2] + 1500, 0, 1, RAND(245, 265), 8);
+					bullets2.add(shoot);
+					shoot = new Bullet(x[G.P2] + 2500, y[G.P2] + 1500, 0, 1, RAND(268, 272), 9);
+					bullets2.add(shoot);
+					shoot = new Bullet(x[G.P2] + 2500, y[G.P2] + 1500, 0, 1, RAND(275, 295), 8);
+					bullets2.add(shoot);
+		
 				}
 				// 8myy+=70;
 			}
 			break;
 		case DAMAGE:
-			pImg = 8;
-			if (mycnt-- == 0) {
+			pImg[G.P2] = 8;
+			if (mycnt[G.P2]-- == 0) {
 				mymode = 0;
-				mycnt = 50;
+				mycnt[G.P2] = 50;
 			}
 			break;
 		}
@@ -687,16 +704,28 @@ public class MainFrame extends Frame implements FocusListener, KeyListener, Runn
 
 	public void processBullet() {
 		Bullet bullet;
+		//2
+		Bullet bullet2;
 		Enemy enemy;
+
+		
 		Effect effect;
+		Effect effect2;
 		int i, j, dist;
+		
 		for (i = 0; i < bullets.size(); i++) {
+			
 			bullet = bullets.elementAt(i);
 			bullet.move();
+			
+		
+			
 			if (bullet.dis.x < 10 || bullet.dis.x > screenWidth + 10 || bullet.dis.y < 10 || bullet.dis.y > screenHeight + 10) {
 				bullets.remove(i);// 화면 밖으로 나가면 총알 제거
 				continue;
 			}
+		
+			
 			if (bullet.from == 0) {// 플레이어가 쏜 총알이 적에게 명중 판정
 				for (j = 0; j < enemies.size(); j++) {
 					enemy = enemies.elementAt(j);
@@ -738,7 +767,8 @@ public class MainFrame extends Frame implements FocusListener, KeyListener, Runn
 				if (dist < 500) {
 					if (myshield == 0) {
 						mymode = 3;
-						mycnt = 30;
+						mycnt[G.P1] = 30;
+						mycnt[G.P2] = 30;
 						bullets.remove(i);
 						effect = new Effect(0, x[G.P1] - 2000, y[G.P1], 0);
 						effects.add(effect);
@@ -753,9 +783,86 @@ public class MainFrame extends Frame implements FocusListener, KeyListener, Runn
 					}
 				}
 			}
+			
 		}
+		//161124
+		for (i = 0; i < bullets2.size(); i++) {
+			
+			bullet2 = bullets2.elementAt(i);
+			bullet2.move();
+			
+		
+			
+			if (bullet2.dis.x < 10 || bullet2.dis.x > screenWidth + 10 || bullet2.dis.y < 10 || bullet2.dis.y > screenHeight + 10) {
+				bullets2.remove(i);// 화면 밖으로 나가면 총알 제거
+				continue;
+			}
+		
+			
+			if (bullet2.from == 1) {// 플레이어가 쏜 총알이 적에게 명중 판정
+				for (j = 0; j < enemies.size(); j++) {
+					enemy = enemies.elementAt(j);
+					dist = getDistance(bullet2.dis.x, bullet2.dis.y, enemy.dis.x, enemy.dis.y);
+					// if(dist<1500) {//중간점 거리가 명중 판정이 가능한 범위에 왔을 때
+					if (dist < enemy.hitrange) {// 중간점 거리가 명중 판정이 가능한 범위에 왔을 때 - hitrange : 적 캐릭터마다 그림에 따라 명중판정되는 범위가 다르다
+						if (enemy.life-- <= 0) {// 적 라이프 감소
+							if (enemy.kind == 1) {
+								if (gameCnt < 2100)
+									gameCnt = 2100;
+							}
+							enemies.remove(j);// 적 캐릭터 소거
+							effect2 = new Effect(0, enemy.pos.x, bullet2.pos.y, 0);
+							effects2.add(effect2);// 폭발 이펙트 추가
+							// Item tem=new Item(ebuff.pos.x, buff.pos.y, RAND(1,(level+1)*20)/((level+1)*20));//난수 결과가 최대값일 때만 생성되는 아이템이 1이 된다
+							int itemKind = RAND(1, 100);
+							Item tem;
+							if (itemKind <= 70)
+								tem = new Item(enemy.pos.x, bullet2.pos.y, 0);
+							else if (itemKind <= 95)
+								tem = new Item(enemy.pos.x, bullet2.pos.y, 2);
+							else
+								tem = new Item(enemy.pos.x, bullet2.pos.y, 1);
+							items.add(tem);
+						}
+						// expl=new Effect(0, ebuff.pos.x, buff.pos.y, 0);
+						effect2 = new Effect(0, bullet2.pos.x, bullet2.pos.y, 0);
+						effects2.add(effect2);
+						score[G.P2]++;// 점수 추가
+						bullets2.remove(i);// 총알 소거
+						break;// 총알이 소거되었으므로 루프 아웃
+					}
+				}
+			}
+			else { // 적이 쏜 총알이 플레이어에게 명중 판정
+				if (mymode != ONPLAY)
+					continue;
+				dist = getDistance(x[G.P2] / 100, y[G.P2] / 100, bullet2.dis.x, bullet2.dis.y);
+				if (dist < 500) {
+					if (myshield == 0) {
+						mymode = 3;
+						mycnt[G.P1] = 30;
+						mycnt[G.P2] = 30;
+						bullets2.remove(i);
+						effect2 = new Effect(0, x[G.P2] - 2000, y[G.P2], 0);
+						effects2.add(effect2);
+						if (--playerLife[G.P2] <= 0) {
+							status = 3;
+							gameCnt = 0;
+						}
+					}
+					else {// 실드가 있을 경우
+						myshield--;
+						bullets2.remove(i);
+					}
+				}
+			}
+			
+		}
+		
+		
 	}
 
+	
 	public void processEffect() {
 		int i;
 		Effect buff;
@@ -766,7 +873,16 @@ public class MainFrame extends Frame implements FocusListener, KeyListener, Runn
 			if (buff.cnt == 0)
 				effects.remove(i);
 		}
+		
+		for (i = 0; i < effects2.size(); i++) {
+			buff = (Effect) (effects2.elementAt(i));
+			if (cnt % 3 == 0)
+				buff.cnt--;
+			if (buff.cnt == 0)
+				effects2.remove(i);
+		}
 	}
+
 
 	public void processGameFlow() {
 		int control = 0;
