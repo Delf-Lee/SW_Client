@@ -71,20 +71,20 @@ public class GameScreen extends Canvas {
 	public void dblpaint() {
 		// 실제 그리는 동작은 이 함수에서 모두 행한다.
 		switch (main.status) {
-		case 0:// 타이틀화면
+		case MainFrame.TITLE:// 타이틀화면
 			drawTitle();
 			gc.setColor(new Color(0));
 			gc.drawString("Education ver.", 10, 40);
 			break;
-		case 1:// 게임 스타트
+		case MainFrame.START:// 게임 스타트
 			drawBackgroundCloud();
 			drawPlayer1();
 			drawPlayer2();
 			drawBackgroundFog();
 			drawImageAnc(_start, 0, 270, 3);
 			break;
-		case 2:// 게임화면
-		case 4:// 일시정지
+		case MainFrame.INGAME:// 게임화면
+		case MainFrame.PAUSE:// 일시정지
 			drawBackgroundCloud();
 			drawPlayer1();
 			drawPlayer2();

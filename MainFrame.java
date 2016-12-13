@@ -28,6 +28,7 @@ public class MainFrame extends Frame implements FocusListener, KeyListener, Runn
 	Thread mainwork;// 스레드 객체
 	boolean loop = true;// 스레드 루프 정보
 	Random rnd = new Random(); // 랜덤 선언
+	boolean reday = false;
 
 	private Client client;
 	private String id;
@@ -97,11 +98,11 @@ public class MainFrame extends Frame implements FocusListener, KeyListener, Runn
 		setBounds(100, 100, 640, 480);// 윈도우의 시작 위치와 너비 높이 지정
 		setResizable(false);// 윈도우의 크기를 변경할 수 없음
 		setVisible(true);// 윈도우 표시
-		
+
 		addKeyListener(this);// 키 입력 이벤트 리스너 활성화
 		addWindowListener(new MyWindowAdapter());// 윈도우의 닫기 버튼 활성화
 		addFocusListener(this);
-		
+
 		gamescreen = new GameScreen(this);// 화면 묘화를 위한 캔버스 객체
 		gamescreen.setBounds(0, 0, screenWidth, screenHeight);
 		add(gamescreen);// Canvas 객체를 프레임에 올린다
@@ -111,7 +112,7 @@ public class MainFrame extends Frame implements FocusListener, KeyListener, Runn
 	}
 
 	public void initProgram() {// 프로그램 초기화
-		status = 0;
+		status = TITLE;
 		cnt = 0;
 		delay = 17;// 17/1000초 = 58 (프레임/초)
 		keybuff = 0;
@@ -140,7 +141,7 @@ public class MainFrame extends Frame implements FocusListener, KeyListener, Runn
 				// 게임 루프를 처리하는데 걸린 시간을 체크해서 딜레이값에서 차감하여 딜레이를 일정하게 유지한다.
 				// 루프 실행 시간이 딜레이 시간보다 크다면 게임 속도가 느려지게 된다.
 
-				if (status != 4)
+				if (status != PAUSE)
 					cnt++;
 			}
 		} catch (Exception e) {
@@ -150,7 +151,6 @@ public class MainFrame extends Frame implements FocusListener, KeyListener, Runn
 
 	// 키 이벤트 리스너 처리
 	public void keyPressed(KeyEvent e) {
-		System.out.println("키 눌림");
 		// if(status==2&&(mymode==2||mymode==0)){
 		if (status == INGAME) {
 			switch (e.getKeyCode()) {
@@ -189,25 +189,31 @@ public class MainFrame extends Frame implements FocusListener, KeyListener, Runn
 			default:
 				break;
 			}
+			if (keybuff != 0x00) {
+				sendKey(keybuff); // delf: 눌린 키를 서버에 전송한다.
+			}
 		}
 		else if (status != INGAME) {
 			System.out.println("게임중 아닌상태에서 무언가 눌림");
 			keybuff = e.getKeyCode();
 			System.out.println("눌린 키는 " + keybuff);
 		}
-		if (keybuff != 0x00) {
-			sendKey(keybuff); // delf: 눌린 키를 서버에 전송한다.
-		}
 
 	}
 
 	/** keybuf에 저장 된 키 값을 서버에 전송. "command id key"의 형식으로 전송된다.
-	 * @param key 현재 눌려져있는 키 값에 해당하는 정수. 현재 keybuff에 저장되어 있는 정수.
-	 * @author delf*/
+	 * @param key 현재 눌려져있는 키 값에 해당하는 정수. 현재 keybuff에 저장되어 있는 정수. */
 	public void sendKey(int key) {
 		String msg = Client.createMsg(G.KEY, id, key + "");
-		System.out.println("create msg: " + msg);
 		client.sendMsg(msg);
+	}
+
+	public void notifyReady() {
+		if (reday == false) {
+			String msg = Client.createMsg(G.READY, id);
+			client.sendMsg(msg);
+			reday = true;
+		}
 	}
 
 	public void keyReleased(KeyEvent e) {
@@ -291,9 +297,11 @@ public class MainFrame extends Frame implements FocusListener, KeyListener, Runn
 		case TITLE:// 타이틀화면
 			if (keybuff == KeyEvent.VK_SPACE) { // delf: 임시로 keybuff로 변경
 				System.out.println("스페이스");
+				notifyReady();
 				initGame();
 				initPlayer();
-				status = START;
+				// TODO: READY 보내기
+				// status = START;
 			}
 			break;
 		case INGAME:// 게임화면
@@ -743,8 +751,9 @@ public class MainFrame extends Frame implements FocusListener, KeyListener, Runn
 						effect = new Effect(0, x[G.P1] - 2000, y[G.P1], 0);
 						effects.add(effect);
 						if (--playerLife[G.P1] <= 0) {
-							status = 3;
+							status = GAMEOVER;
 							gameCnt = 0;
+
 						}
 					}
 					else {// 실드가 있을 경우
@@ -992,11 +1001,15 @@ public class MainFrame extends Frame implements FocusListener, KeyListener, Runn
 
 	@Override
 	public void focusGained(FocusEvent e) {
-		
+
 	}
 
 	@Override
 	public void focusLost(FocusEvent e) {
 		this.requestFocus();
+	}
+
+	public void setGameStatus(int status) {
+		this.status = status;
 	}
 }

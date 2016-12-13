@@ -31,7 +31,6 @@ public class Client extends Thread {
 		game = new MainFrame(this);
 	}
 
-	// delf: udp 변경 부분
 	/** 서버와 연결 */
 	public void connectServer() {
 		// setSocketPort(13132);
@@ -40,7 +39,7 @@ public class Client extends Thread {
 				// sndSocket = new DatagramSocket(SENDPORT); // 전송용 소켓
 				rcvSocket = new DatagramSocket(RECEIVEPORT); // 수신용 소켓
 				if (rcvSocket != null) { // socket이 null값이 아닐때 즉! 연결되었을때
-					System.out.println("> 클라이언트 수신스레드 시작 (receive port: "+ RECEIVEPORT + ")");
+					System.out.println("> 클라이언트 수신스레드 시작 (receive port: " + RECEIVEPORT + ")");
 					start(); // 수신 스레드 시작
 					break;
 				}
@@ -81,15 +80,21 @@ public class Client extends Thread {
 		String splitMsg[];
 		msg = msg.trim(); // delf: 받은 메시지를 쪼갠다.
 		splitMsg = msg.split(G.BLANK); // delf: 빈칸을 기준으로 나누어 담는다.
-		int target = Integer.parseInt(splitMsg[ID]); // delf: 메시지에 대한 타겟을 저장
+		int target = Integer.parseInt(splitMsg[ID]);
 
 		switch (splitMsg[CMD]) { // delf: 받은 메세지의 명령어가
 		case G.KEY: // delf: "키 변경" 이라면
 			game.control[target] = Integer.parseInt(splitMsg[KEY]); // delf: 타겟의 키 값을 다음과 같이 설정
 			break;
+			
 		case G.ACCESS:
 			System.out.println("받은 id = " + splitMsg[ID]);
-			this.id = Integer.parseInt(splitMsg[ID]);
+			this.id = target;
+			break;
+			
+		case G.READY:
+			System.out.println("서버로부터 시작명령을 받음");
+			game.setGameStatus(MainFrame.START);
 			break;
 
 		default:
@@ -141,6 +146,7 @@ public class Client extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
 	}
 
 	/** 입력 받은 파라미터들로 프로토콜 형식으로 만든다.

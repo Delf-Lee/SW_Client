@@ -13,5 +13,7 @@ public class G {
 	public final static String BLANK = " ";
 	public final static String KEY = "/KEY";
 	public final static String MYID = "/MYID";
-	public final static String ACCESS = "/ACCESS"; 
+	public final static String ACCESS = "/ACCESS";
+	public final static String READY = "/READY"; 
+
 }
