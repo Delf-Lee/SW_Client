@@ -3,6 +3,7 @@ import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /** @author delf */
 public class Client extends Thread {
@@ -13,7 +14,7 @@ public class Client extends Thread {
 	public final static int KEY = 2;
 	public final static int DELAY = 3;
 
-	private InetAddress serverIP = InetAddress.getLoopbackAddress();
+	private InetAddress serverIP ;
 	private int port = 13131;
 	// private Socket socket = new Socket();
 	private DatagramSocket sndSocket;
@@ -29,7 +30,8 @@ public class Client extends Thread {
 	public static int SENDPORT = 13131;
 	public static int RECEIVEPORT = 13132;
 
-	public Client() {
+	public Client() throws UnknownHostException {
+		serverIP = InetAddress.getByName("113.198.81.16");
 		connectServer();
 		System.out.println("«¹«È«é«¤«¯«¦«£«Ã«Á-«º Start!");
 		game = new MainFrame(this);
@@ -129,7 +131,7 @@ public class Client extends Thread {
 		game.control[id] = key;
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws UnknownHostException {
 		new Client();
 	}
 
