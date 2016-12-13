@@ -78,7 +78,7 @@ public class Enemy {
 			if (mode != 4)
 				break;
 			if (cnt < 30 && cnt % 5 == 0) {
-				bul = new Bullet(pos.x, pos.y, 2, 1, 90, 5);
+				bul = new Bullet(pos.x, pos.y, 2, 2, 90, 5);
 				main.bullets.add(bul);
 			}
 			if (cnt > 50) {
@@ -98,34 +98,43 @@ public class Enemy {
 				if (cnt % 100 == 0 || cnt % 103 == 0 || cnt % 106 == 0) {// cnt로 공격 간격을 체크한다
 					bul = new Bullet(pos.x, pos.y, 2, 2, main.getAngle(pos.x, pos.y, main.x[G.P1], main.y[G.P1]), 3);
 					main.bullets.add(bul);
+					
 				}
 				break;
 			case FOUR_ATTACK:// 타이머에 맞춰 4방향탄을 발사한다
 				if (cnt % 90 == 0 || cnt % 100 == 0 || cnt % 110 == 0) {
 					bul = new Bullet(pos.x, pos.y, 2, 2, (0 + (cnt % 36) * 10) % 360, 3);
 					main.bullets.add(bul);
+					
 					bul = new Bullet(pos.x, pos.y, 2, 2, (30 + (cnt % 36) * 10) % 360, 3);
 					main.bullets.add(bul);
+					
 					bul = new Bullet(pos.x, pos.y, 2, 2, (60 + (cnt % 36) * 10) % 360, 3);
 					main.bullets.add(bul);
+					
 					bul = new Bullet(pos.x, pos.y, 2, 2, (90 + (cnt % 36) * 10) % 360, 3);
 					main.bullets.add(bul);
+					
 				}
 				break;
 			case SINGLE_ATTACK:// 짧은 간격으로 플레이어 근처를 향해 한 발씩 발사한다
 				if (cnt % 30 == 0 || cnt % 60 == 0 || cnt % 90 == 0 || cnt % 120 == 0 || cnt % 150 == 0 || cnt % 180 == 0) {
 					bul = new Bullet(pos.x, pos.y, 2, 1, (main.getAngle(pos.x, pos.y, main.x[G.P1], main.y[G.P1]) + main.RAND(-20, 20)) % 360, 2);
 					main.bullets.add(bul);
+					
 				}
 				break;
 			case TRIPLE_ATTACK:// 플레이어를 향해 3갈래탄을 발사한다
 				if (cnt % 90 == 0 || cnt % 110 == 0 || cnt % 130 == 0) {
 					bul = new Bullet(pos.x, pos.y, 2, 2, main.getAngle(pos.x, pos.y, main.x[G.P1], main.y[G.P1]), 2);
 					main.bullets.add(bul);
+					
 					bul = new Bullet(pos.x, pos.y, 2, 2, (main.getAngle(pos.x, pos.y, main.x[G.P1], main.y[G.P1]) - 20) % 360, 2);
 					main.bullets.add(bul);
+					
 					bul = new Bullet(pos.x, pos.y, 2, 2, (main.getAngle(pos.x, pos.y, main.x[G.P1], main.y[G.P1]) + 20) % 360, 2);
 					main.bullets.add(bul);
+					
 				}
 				break;
 			case NONE:// 아무런 공격도 하지않는다
@@ -144,6 +153,7 @@ public class Enemy {
 					for (i = 0; i < 4 + (50 - lv) / 5; i++) {
 						bul = new Bullet(pos.x, pos.y, 2, 2, (30 * i + (cnt % 36) * 10) % 360, 5);
 						main.bullets.add(bul);
+						
 					}
 					/*bul=new Bullet(pos.x, pos.y, 2, 1, (30+(cnt%36)*10)%360, 4);
 					main.bullets.add(bul);
@@ -161,6 +171,7 @@ public class Enemy {
 				if (cnt % lv == 0) {
 					bul = new Bullet(pos.x - 3000 + main.RAND(-10, +10) * 100, pos.y + main.RAND(10, 80) * 100, 2, 2, 90, 5 + (10 - lv) / 2);
 					main.bullets.add(bul);
+				
 				}
 				break;
 			}

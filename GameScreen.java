@@ -4,6 +4,8 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 
+import javax.swing.JLabel;
+
 public class GameScreen extends Canvas {
 	// 실제 게임의 메인 제어를 행하는 클래스
 	// 가급적 화면 출력에서는 게임에서 공통으로 쓰이는 변수값의 변경 등을 행하지 않는 것이 좋다.
@@ -14,6 +16,7 @@ public class GameScreen extends Canvas {
 	// 화면 그리기용 변수
 	int x, y;// 플레이어 캐릭터의 좌표
 
+	
 	Image dblbuff;// 더블버퍼링용 백버퍼
 	Graphics gc;// 더블버퍼링용 그래픽 컨텍스트
 
@@ -24,7 +27,7 @@ public class GameScreen extends Canvas {
 	Image chr[] = new Image[9];// 플레이어 캐릭터
 	Image enemy[] = new Image[5];// 적 캐릭터
 	Image bullet[] = new Image[5];// 총알
-	Image bullets2[] = new Image[5];// 총알
+
 	Image explo;// 폭염
 	Image item[] = new Image[3];// 아이템
 
@@ -147,7 +150,7 @@ public class GameScreen extends Canvas {
 		int px, py;
 		px = main.x[G.P1] / 100;
 		py = main.y[G.P1] / 100;
-		switch (main.mymode) {
+		switch (main.mymode[G.P1]) {
 		case MainFrame.UNBEATABLE:// 무적
 		case MainFrame.APPEARANCE:// 무적이면서 등장
 			if (main.cnt % 20 < 10)
@@ -166,9 +169,9 @@ public class GameScreen extends Canvas {
 				drawImageAnc(chr[8], px, py, 4);
 			break;
 		}
-		if (main.myshield > 2)
+		if (main.myshield[G.P1] > 2)
 			drawImageAnc(shield, (int) (Math.sin(Math.toRadians((cnt % 72) * 5)) * 16 + px), (int) (Math.cos(Math.toRadians((cnt % 72) * 5)) * 16 + py), (main.cnt / 6 % 7) * 64, 0, 64, 64, 4);// 실드 라이프가 3 이상
-		else if (main.myshield > 0 && main.cnt % 4 < 2)
+		else if (main.myshield[G.P1] > 0 && main.cnt % 4 < 2)
 			drawImageAnc(shield, (int) (Math.sin(Math.toRadians((cnt % 72) * 5)) * 16 + px), (int) (Math.cos(Math.toRadians((cnt % 72) * 5)) * 16 + py), (main.cnt / 6 % 7) * 64, 0, 64, 64, 4);// 실드 라이프가 1, 2면 점멸
 	}
 
@@ -177,7 +180,7 @@ public class GameScreen extends Canvas {
 		int px, py;
 		px = main.x[G.P2] / 100;
 		py = main.y[G.P2] / 100;
-		switch (main.mymode) {
+		switch (main.mymode[G.P2]) {
 		case MainFrame.UNBEATABLE:// 무적
 		case MainFrame.APPEARANCE:// 무적이면서 등장
 			if (main.cnt % 20 < 10)
@@ -196,9 +199,9 @@ public class GameScreen extends Canvas {
 				drawImageAnc(chr[8], px, py, 4);
 			break;
 		}
-		if (main.myshield > 2)
+		if (main.myshield[G.P2] > 2)
 			drawImageAnc(shield, (int) (Math.sin(Math.toRadians((cnt % 72) * 5)) * 16 + px), (int) (Math.cos(Math.toRadians((cnt % 72) * 5)) * 16 + py), (main.cnt / 6 % 7) * 64, 0, 64, 64, 4);// 실드 라이프가 3 이상
-		else if (main.myshield > 0 && main.cnt % 4 < 2)
+		else if (main.myshield[G.P2] > 0 && main.cnt % 4 < 2)
 			drawImageAnc(shield, (int) (Math.sin(Math.toRadians((cnt % 72) * 5)) * 16 + px), (int) (Math.cos(Math.toRadians((cnt % 72) * 5)) * 16 + py), (main.cnt / 6 % 7) * 64, 0, 64, 64, 4);// 실드 라이프가 1, 2면 점멸
 	}
 	
@@ -242,7 +245,7 @@ public class GameScreen extends Canvas {
 	}
 	public void drawBullet() {
 		Bullet buff;
-		Bullet buff2;
+	
 		int i;
 		for (i = 0; i < main.bullets.size(); i++) {
 			buff = (Bullet) (main.bullets.elementAt(i));
@@ -256,32 +259,16 @@ public class GameScreen extends Canvas {
 			}
 		}
 		
-		for (i = 0; i < main.bullets2.size(); i++) {
-			buff2 = (Bullet) (main.bullets2.elementAt(i));
-			switch (buff2.img_num) {
-			case 0:
-			case 1:
-			case 2:
-			case 3:
-				drawImageAnc(bullets2[buff2.img_num], buff2.dis.x - 6, buff2.dis.y - 6, 4);
-				break;
-			}
-		}
+	
 	}
 
 	public void Draw_EFFECT() {
 		int i;
 		Effect buff;
-		Effect buff2;
+
 		for (i = 0; i < main.effects.size(); i++) {
 			buff = (Effect) (main.effects.elementAt(i));
 			drawImageAnc(explo, buff.dis.x, buff.dis.y, ((16 - buff.cnt) % 4) * 64, ((16 - buff.cnt) / 4) * 64, 64, 64, 4);
-		}
-		
-		//161124
-		for (i = 0; i < main.effects2.size(); i++) {
-			buff2 = (Effect) (main.effects2.elementAt(i));
-			drawImageAnc(explo, buff2.dis.x, buff2.dis.y, ((16 - buff2.cnt) % 4) * 64, ((16 - buff2.cnt) / 4) * 64, 64, 64, 4);
 		}
 	}
 
@@ -310,8 +297,8 @@ public class GameScreen extends Canvas {
 		gc.drawString(str2, 11, main.screenHeight - 10);
 		gc.drawString(str2, 10, main.screenHeight - 11);
 		gc.drawString(str2, 10, main.screenHeight - 9);
+		gc.drawString(Integer.toString(main.cnt), 50, main.screenHeight - 10);
 		gc.setColor(new Color(0xffffff));
-		gc.drawString(str2, 10, main.screenHeight - 10);
 
 		// 그래피컬 UI를 위한 추가 코드
 		gc.drawImage(uiUp, 16, 25, this);// 2013-10

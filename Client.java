@@ -11,6 +11,7 @@ public class Client extends Thread {
 	public final static int CMD = 0;
 	public final static int ID = 1;
 	public final static int KEY = 2;
+	public final static int DELAY = 3;
 
 	private InetAddress serverIP = InetAddress.getLoopbackAddress();
 	private int port = 13131;
@@ -20,7 +21,10 @@ public class Client extends Thread {
 	// private DataInputStream dis;
 	// private DataOutputStream dos;
 	private MainFrame game;
+	private MessageQueue messageQueue;
 	private int id;
+
+	private int delay;
 
 	public static int SENDPORT = 13131;
 	public static int RECEIVEPORT = 13132;
@@ -29,6 +33,7 @@ public class Client extends Thread {
 		connectServer();
 		System.out.println("ストライクウィッチ-ズ Start!");
 		game = new MainFrame(this);
+		messageQueue = new MessageQueue(this);
 	}
 
 	/** 서버와 연결 */
@@ -75,31 +80,54 @@ public class Client extends Thread {
 	/** 서버로부터 받은 메시지를 분석하고 명령어에 따라 적절한 처리를 한다.
 	 * @param msg 서버로 부터 받은 메시지 */
 	public void handlingMsg(String msg) {
-		System.out.println("recv msg from Server = " + msg);
 
 		String splitMsg[];
 		msg = msg.trim(); // delf: 받은 메시지를 쪼갠다.
 		splitMsg = msg.split(G.BLANK); // delf: 빈칸을 기준으로 나누어 담는다.
 		int target = Integer.parseInt(splitMsg[ID]);
+		if (!splitMsg[CMD].equals("/Test")) {
+			System.out.println("recv msg from Server = " + msg);
+		}
 
 		switch (splitMsg[CMD]) { // delf: 받은 메세지의 명령어가
 		case G.KEY: // delf: "키 변경" 이라면
-			game.control[target] = Integer.parseInt(splitMsg[KEY]); // delf: 타겟의 키 값을 다음과 같이 설정
+			messageQueue.enQueue(msg);
+			// delay = setDelay(Integer.parseInt(splitMsg[DELAY]));
+			// Thread.sleep(delay);
+			// game.control[target] = Integer.parseInt(splitMsg[KEY]); // delf: 타겟의 키 값을 다음과 같이 설정
 			break;
-			
+
 		case G.ACCESS:
 			System.out.println("받은 id = " + splitMsg[ID]);
 			this.id = target;
 			break;
-			
+
 		case G.READY:
 			System.out.println("서버로부터 시작명령을 받음");
+			game.initCnt();
 			game.setGameStatus(MainFrame.START);
+
+			break;
+		case "/Test":
+			sendMsg(msg);
 			break;
 
 		default:
 			break;
 		}
+	}
+
+	public int setDelay(int d) {
+		if (d < 0) {
+			return 0;
+		}
+		return d;
+	}
+
+	/** 타겟의 키 값을 다음과 같이 설정 */
+	public void setControl(int id, int key) {
+		System.out.println("######################### id = " + id + ", key = " + key);
+		game.control[id] = key;
 	}
 
 	public static void main(String[] args) {
@@ -137,7 +165,9 @@ public class Client extends Thread {
 	}
 
 	public void sendMsg(String msg) {
-		System.out.println("send msg to server[" + SENDPORT + "]: " + msg);
+		if (!((msg.split(" ")[0]).equals("/Test"))) {
+			System.out.println("send msg to server[" + SENDPORT + "]: " + msg);
+		}
 		try {
 			byte[] bb = new byte[BUFSIZE];
 			bb = msg.getBytes();
@@ -146,7 +176,7 @@ public class Client extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	/** 입력 받은 파라미터들로 프로토콜 형식으로 만든다.
