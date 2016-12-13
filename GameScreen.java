@@ -24,6 +24,7 @@ public class GameScreen extends Canvas {
 	Image chr[] = new Image[9];// 플레이어 캐릭터
 	Image enemy[] = new Image[5];// 적 캐릭터
 	Image bullet[] = new Image[5];// 총알
+	Image bullets2[] = new Image[5];// 총알
 	Image explo;// 폭염
 	Image item[] = new Image[3];// 아이템
 
@@ -153,12 +154,12 @@ public class GameScreen extends Canvas {
 				drawImageAnc(chr[2 + (main.cnt / 5) % 2], px, py, 4);
 			break;
 		case MainFrame.ONPLAY:// 온플레이
-			if (main.pImg == 6)
-				drawImageAnc(chr[main.pImg + (main.cnt / 3) % 2], px, py, 4);
-			else if (main.pImg != 8)
-				drawImageAnc(chr[main.pImg + (main.cnt / 5) % 2], px, py, 4);
-			else if (main.pImg == 8)
-				drawImageAnc(chr[main.pImg], px, py, 4);
+			if (main.pImg[G.P1] == 6)
+				drawImageAnc(chr[main.pImg[G.P1] + (main.cnt / 3) % 2], px, py, 4);
+			else if (main.pImg[G.P1] != 8)
+				drawImageAnc(chr[main.pImg[G.P1] + (main.cnt / 5) % 2], px, py, 4);
+			else if (main.pImg[G.P1] == 8)
+				drawImageAnc(chr[main.pImg[G.P1]], px, py, 4);
 			break;
 		case MainFrame.DAMAGE:// 데미지
 			if (main.cnt % 6 < 3)
@@ -170,6 +171,7 @@ public class GameScreen extends Canvas {
 		else if (main.myshield > 0 && main.cnt % 4 < 2)
 			drawImageAnc(shield, (int) (Math.sin(Math.toRadians((cnt % 72) * 5)) * 16 + px), (int) (Math.cos(Math.toRadians((cnt % 72) * 5)) * 16 + py), (main.cnt / 6 % 7) * 64, 0, 64, 64, 4);// 실드 라이프가 1, 2면 점멸
 	}
+
 
 	public void drawPlayer2() {
 		int px, py;
@@ -182,12 +184,12 @@ public class GameScreen extends Canvas {
 				drawImageAnc(chr[2 + (main.cnt / 5) % 2], px, py, 4);
 			break;
 		case MainFrame.ONPLAY:// 온플레이
-			if (main.pImg == 6)
-				drawImageAnc(chr[main.pImg + (main.cnt / 3) % 2], px, py, 4);
-			else if (main.pImg != 8)
-				drawImageAnc(chr[main.pImg + (main.cnt / 5) % 2], px, py, 4);
-			else if (main.pImg == 8)
-				drawImageAnc(chr[main.pImg], px, py, 4);
+			if (main.pImg[G.P2] == 6)
+				drawImageAnc(chr[main.pImg[G.P2] + (main.cnt / 3) % 2], px, py, 4);
+			else if (main.pImg[G.P2] != 8)
+				drawImageAnc(chr[main.pImg[G.P2] + (main.cnt / 5) % 2], px, py, 4);
+			else if (main.pImg[G.P2] == 8)
+				drawImageAnc(chr[main.pImg[G.P2]], px, py, 4);
 			break;
 		case MainFrame.DAMAGE:// 데미지
 			if (main.cnt % 6 < 3)
@@ -199,7 +201,6 @@ public class GameScreen extends Canvas {
 		else if (main.myshield > 0 && main.cnt % 4 < 2)
 			drawImageAnc(shield, (int) (Math.sin(Math.toRadians((cnt % 72) * 5)) * 16 + px), (int) (Math.cos(Math.toRadians((cnt % 72) * 5)) * 16 + py), (main.cnt / 6 % 7) * 64, 0, 64, 64, 4);// 실드 라이프가 1, 2면 점멸
 	}
-
 	public void drawEnemy() {
 		int i;
 		Enemy buff;
@@ -232,9 +233,9 @@ public class GameScreen extends Canvas {
 			}
 		}
 	}
-
 	public void drawBullet() {
 		Bullet buff;
+		Bullet buff2;
 		int i;
 		for (i = 0; i < main.bullets.size(); i++) {
 			buff = (Bullet) (main.bullets.elementAt(i));
@@ -247,14 +248,33 @@ public class GameScreen extends Canvas {
 				break;
 			}
 		}
+		
+		for (i = 0; i < main.bullets2.size(); i++) {
+			buff2 = (Bullet) (main.bullets2.elementAt(i));
+			switch (buff2.img_num) {
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+				drawImageAnc(bullets2[buff2.img_num], buff2.dis.x - 6, buff2.dis.y - 6, 4);
+				break;
+			}
+		}
 	}
 
 	public void Draw_EFFECT() {
 		int i;
 		Effect buff;
+		Effect buff2;
 		for (i = 0; i < main.effects.size(); i++) {
 			buff = (Effect) (main.effects.elementAt(i));
 			drawImageAnc(explo, buff.dis.x, buff.dis.y, ((16 - buff.cnt) % 4) * 64, ((16 - buff.cnt) / 4) * 64, 64, 64, 4);
+		}
+		
+		//161124
+		for (i = 0; i < main.effects2.size(); i++) {
+			buff2 = (Effect) (main.effects2.elementAt(i));
+			drawImageAnc(explo, buff2.dis.x, buff2.dis.y, ((16 - buff2.cnt) % 4) * 64, ((16 - buff2.cnt) / 4) * 64, 64, 64, 4);
 		}
 	}
 

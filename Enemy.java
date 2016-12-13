@@ -77,19 +77,19 @@ public class Enemy {
 			switch (shoottype) {// 공격 형태에 따라 각기 다른 공격을 한다.
 			case 0:// 플레이어를 향해 3발을 점사한다
 				if (cnt % 100 == 0 || cnt % 103 == 0 || cnt % 106 == 0) {// cnt로 공격 간격을 체크한다
-					bul = new Bullet(pos.x, pos.y, 2, 1, main.getAngle(pos.x, pos.y, main.x[G.P1], main.y[G.P1]), 3);
+					bul = new Bullet(pos.x, pos.y, 2, 2, main.getAngle(pos.x, pos.y, main.x[G.P1], main.y[G.P1]), 3);
 					main.bullets.add(bul);
 				}
 				break;
 			case 1:// 타이머에 맞춰 4방향탄을 발사한다
 				if (cnt % 90 == 0 || cnt % 100 == 0 || cnt % 110 == 0) {
-					bul = new Bullet(pos.x, pos.y, 2, 1, (0 + (cnt % 36) * 10) % 360, 3);
+					bul = new Bullet(pos.x, pos.y, 2, 2, (0 + (cnt % 36) * 10) % 360, 3);
 					main.bullets.add(bul);
-					bul = new Bullet(pos.x, pos.y, 2, 1, (30 + (cnt % 36) * 10) % 360, 3);
+					bul = new Bullet(pos.x, pos.y, 2, 2, (30 + (cnt % 36) * 10) % 360, 3);
 					main.bullets.add(bul);
-					bul = new Bullet(pos.x, pos.y, 2, 1, (60 + (cnt % 36) * 10) % 360, 3);
+					bul = new Bullet(pos.x, pos.y, 2, 2, (60 + (cnt % 36) * 10) % 360, 3);
 					main.bullets.add(bul);
-					bul = new Bullet(pos.x, pos.y, 2, 1, (90 + (cnt % 36) * 10) % 360, 3);
+					bul = new Bullet(pos.x, pos.y, 2, 2, (90 + (cnt % 36) * 10) % 360, 3);
 					main.bullets.add(bul);
 				}
 				break;
@@ -101,11 +101,11 @@ public class Enemy {
 				break;
 			case 3:// 플레이어를 향해 3갈래탄을 발사한다
 				if (cnt % 90 == 0 || cnt % 110 == 0 || cnt % 130 == 0) {
-					bul = new Bullet(pos.x, pos.y, 2, 1, main.getAngle(pos.x, pos.y, main.x[G.P1], main.y[G.P1]), 2);
+					bul = new Bullet(pos.x, pos.y, 2, 2, main.getAngle(pos.x, pos.y, main.x[G.P1], main.y[G.P1]), 2);
 					main.bullets.add(bul);
-					bul = new Bullet(pos.x, pos.y, 2, 1, (main.getAngle(pos.x, pos.y, main.x[G.P1], main.y[G.P1]) - 20) % 360, 2);
+					bul = new Bullet(pos.x, pos.y, 2, 2, (main.getAngle(pos.x, pos.y, main.x[G.P1], main.y[G.P1]) - 20) % 360, 2);
 					main.bullets.add(bul);
-					bul = new Bullet(pos.x, pos.y, 2, 1, (main.getAngle(pos.x, pos.y, main.x[G.P1], main.y[G.P1]) + 20) % 360, 2);
+					bul = new Bullet(pos.x, pos.y, 2, 2, (main.getAngle(pos.x, pos.y, main.x[G.P1], main.y[G.P1]) + 20) % 360, 2);
 					main.bullets.add(bul);
 				}
 				break;
@@ -123,7 +123,7 @@ public class Enemy {
 					lv = (10 - main.level) * 5;
 				if (cnt % lv == 0 || cnt % (lv + 5) == 0 || cnt % (lv + 15) == 0) {
 					for (i = 0; i < 4 + (50 - lv) / 5; i++) {
-						bul = new Bullet(pos.x, pos.y, 2, 1, (30 * i + (cnt % 36) * 10) % 360, 5);
+						bul = new Bullet(pos.x, pos.y, 2, 2, (30 * i + (cnt % 36) * 10) % 360, 5);
 						main.bullets.add(bul);
 					}
 					/*bul=new Bullet(pos.x, pos.y, 2, 1, (30+(cnt%36)*10)%360, 4);
@@ -140,7 +140,7 @@ public class Enemy {
 				else
 					lv = 10 - main.level;
 				if (cnt % lv == 0) {
-					bul = new Bullet(pos.x - 3000 + main.RAND(-10, +10) * 100, pos.y + main.RAND(10, 80) * 100, 2, 1, 90, 5 + (10 - lv) / 2);
+					bul = new Bullet(pos.x - 3000 + main.RAND(-10, +10) * 100, pos.y + main.RAND(10, 80) * 100, 2, 2, 90, 5 + (10 - lv) / 2);
 					main.bullets.add(bul);
 				}
 				break;
