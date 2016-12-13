@@ -40,13 +40,12 @@ public class Client extends Thread {
 				// sndSocket = new DatagramSocket(SENDPORT); // 전송용 소켓
 				rcvSocket = new DatagramSocket(RECEIVEPORT); // 수신용 소켓
 				if (rcvSocket != null) { // socket이 null값이 아닐때 즉! 연결되었을때
-					System.out.println("> 클라이언트 수신스레드 시작");
+					System.out.println("> 클라이언트 수신스레드 시작 (receive port: "+ RECEIVEPORT + ")");
 					start(); // 수신 스레드 시작
 					break;
 				}
 			} catch (BindException be) {
-				//be.printStackTrace();
-				System.out.println(RECEIVEPORT);
+				// be.printStackTrace();
 				RECEIVEPORT++;
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -67,6 +66,7 @@ public class Client extends Thread {
 			try {
 				rcvSocket.receive(rcvPacket); // delf :메시지 수신
 				handlingMsg(new String(bb)); // delf: 받은 메시지에 따라 적절한 처리를 한다.
+				initByte(bb);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -88,6 +88,7 @@ public class Client extends Thread {
 			game.control[target] = Integer.parseInt(splitMsg[KEY]); // delf: 타겟의 키 값을 다음과 같이 설정
 			break;
 		case G.ACCESS:
+			System.out.println("받은 id = " + splitMsg[ID]);
 			this.id = Integer.parseInt(splitMsg[ID]);
 			break;
 
@@ -159,5 +160,11 @@ public class Client extends Thread {
 	private void setSocketPort(int port) {
 		SENDPORT = port;
 		RECEIVEPORT = port + 1;
+	}
+
+	private void initByte(byte[] b) {
+		for (int i = 0; i < b.length; i++) {
+			b[i] = 0;
+		}
 	}
 }

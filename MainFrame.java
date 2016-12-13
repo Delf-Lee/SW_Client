@@ -205,8 +205,8 @@ public class MainFrame extends Frame implements FocusListener, KeyListener, Runn
 	 * @param key 현재 눌려져있는 키 값에 해당하는 정수. 현재 keybuff에 저장되어 있는 정수.
 	 * @author delf*/
 	public void sendKey(int key) {
-		System.out.println("pressed key: " + key);
 		String msg = Client.createMsg(G.KEY, id, key + "");
+		System.out.println("create msg: " + msg);
 		client.sendMsg(msg);
 	}
 
